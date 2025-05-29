@@ -6,7 +6,7 @@ import { User, UserSchema } from './schemas/user.schema';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]), //- import model User vào module để nó có thể sử dụng trong service
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]), //- import model mongoose  vào để nó có thể sử dụng nó trong service của users module. Nói cách khác là đang để cho 2 module là mongodb module với users module có thể giao tiếp với nhau
   ],
   controllers: [UsersController],
   providers: [UsersService],

@@ -16,7 +16,7 @@ export class AppController {
 
   @Get()
   getHello(): string {
-    console.log('check PORT: ', this.configService.get<string>('PORT'));
+    console.log('check PORT: ', this.configService.get<string>('PORT')); //- cu phap .get<string> la mong muon kieu tra ve la string
     return this.appService.getHello();
   }
 

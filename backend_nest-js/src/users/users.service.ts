@@ -10,6 +10,7 @@ import { User, UserDocument } from './schemas/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { compareSync, genSaltSync, hashSync } from 'bcryptjs';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
+import { BadRequestCustom } from 'src/customExceptions/BadRequestCustom';
 
 @Injectable()
 export class UsersService {
@@ -25,6 +26,13 @@ export class UsersService {
   }
 
   async create(createUserDto: CreateUserDto) {
+    const email = createUserDto.email;
+
+    const checkEmail = await this.userModel.findOne({ email });
+    if (checkEmail) {
+      throw new BadRequestCustom('Email đã tồn tại hãy chọn một email khác!', !!checkEmail);
+    }
+    
     const hashPassword: string = this.getHashPassword(createUserDto.password);
     createUserDto.password = hashPassword;
     const user = await this.userModel.create(createUserDto);

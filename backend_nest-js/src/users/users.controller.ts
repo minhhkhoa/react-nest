@@ -22,7 +22,7 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
-  @Get(':id')
+  @Get("")
   findAll() {
     return this.usersService.findAll();
   }
@@ -35,6 +35,7 @@ export class UsersController {
   //- cho hết vào body kể cả id
   @Patch()
   update(@Body() updateUserDto: UpdateUserDto) {
+    console.log("data: ", updateUserDto);
     return this.usersService.update(updateUserDto);
   }
 

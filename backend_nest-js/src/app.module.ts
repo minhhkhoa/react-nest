@@ -13,7 +13,6 @@ import { CompaniesModule } from './companies/companies.module';
   imports: [
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
-      // eslint-disable-next-line @typescript-eslint/require-await
       useFactory: async (configService: ConfigService) => ({
         uri: configService.get<string>('MONGO_URL'),
         connectionFactory: (connection: Connection) => {
@@ -24,8 +23,9 @@ import { CompaniesModule } from './companies/companies.module';
       }),
       inject: [ConfigService],
     }),
+    //- configModule giúp sử dụng file .env
     ConfigModule.forRoot({
-      isGlobal: true, //---> This is a global configuration
+      isGlobal: true, //---> This is a global configuration để có thể sử dụng cònigModule trong các module khác
     }),
     UsersModule,
     AuthModule,
