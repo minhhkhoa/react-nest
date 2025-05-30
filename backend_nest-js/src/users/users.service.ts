@@ -30,9 +30,12 @@ export class UsersService {
 
     const checkEmail = await this.userModel.findOne({ email });
     if (checkEmail) {
-      throw new BadRequestCustom('Email đã tồn tại hãy chọn một email khác!', !!checkEmail);
+      throw new BadRequestCustom(
+        'Email đã tồn tại hãy chọn một email khác!',
+        !!checkEmail,
+      );
     }
-    
+
     const hashPassword: string = this.getHashPassword(createUserDto.password);
     createUserDto.password = hashPassword;
     const user = await this.userModel.create(createUserDto);
@@ -51,26 +54,33 @@ export class UsersService {
   async findUser(criteria: {
     id?: string;
     username?: string;
-  }): Promise<User | User[]> {
+  }): Promise<User | { users: User[]; total: number; message: string }> {
     if (criteria.id) {
       // Kiểm tra id hợp lệ với mongoose
       if (!mongoose.Types.ObjectId.isValid(criteria.id)) {
-        throw new BadRequestException('Invalid id!');
+        throw new BadRequestCustom(
+          'Id người dùng không hợp lệ!',
+          !!criteria.id,
+        );
       }
-      const user = await this.userModel.findById({ id: criteria.id });
+      const user = await this.userModel.findById({ _id: criteria.id });
       if (!user) {
         throw new NotFoundException('User not found!');
       }
       return user;
     } else if (criteria.username) {
-      // Tìm kiếm user theo emai không phân biệt hoa thường
+      // Tìm kiếm user theo username không phân biệt hoa thường
       const users = await this.userModel.find({
-        username: new RegExp(criteria.username, 'i'),
+        name: new RegExp(criteria.username, 'i'),
       });
       if (!users.length) {
-        throw new NotFoundException('No user found with the given username!');
+        throw new NotFoundException(`Không tìm thấy user ${criteria.username}`);
       }
-      return users;
+      return {
+        users: users,
+        total: users.length,
+        message: `Tìm thấy ${users.length} người dùng`,
+      };
     } else {
       throw new BadRequestException(
         'You must provide either an id or a username.',

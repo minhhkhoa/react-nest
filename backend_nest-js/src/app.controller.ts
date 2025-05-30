@@ -23,9 +23,8 @@ export class AppController {
   @Public() //-route nay se de public khong can xac thuc access_token voi JwtAuthGuard
   @UseGuards(LocalAuthGuard)
   @Post('/login')
-  handleLogin(@Request() req) {
+  handleLogin(@Request() req: any) {
     //- req.user được passport tự động trả về khi xác thực thành công người dùng ở hàm validate của  file Strategy, nó sẽ lấy giá trị trả về của hàm validate dán vào req.user
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     return this.authService.login(req.user);
   }
 
