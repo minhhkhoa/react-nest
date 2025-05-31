@@ -12,7 +12,14 @@ async function bootstrap() {
   const reflector = app.get(Reflector);
   // app.useGlobalGuards(new JwtAuthGuard(reflector));
 
-  app.useGlobalPipes(new ValidationPipe()); //- sử dụng pipe để validate dữ liệu trước khi vào controller
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true, // ép kiểu theo DTO
+      transformOptions: {
+        enableImplicitConversion: true, // tự động convert string -> number, v.v.
+      },
+    }),
+  ); //- sử dụng pipe để validate dữ liệu trước khi vào controller
 
   //- config cors
   app.enableCors({

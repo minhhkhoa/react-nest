@@ -97,6 +97,8 @@ export class UsersService {
   }
 
   async update(updateUserDto: UpdateUserDto) {
+    console.log('data: ', updateUserDto);
+
     return await this.userModel.updateOne(
       { _id: updateUserDto._id },
       { $set: updateUserDto }, //-$set giúp tránh việc ghi đè toàn bộ document; chỉ những trường được chỉ định mới bị thay đổi.
@@ -105,9 +107,7 @@ export class UsersService {
 
   async remove(id: string) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return {
-        message: 'id not invalid!',
-      };
+      throw new BadRequestCustom('Id người dùng không hợp lệ!', !!id);
     }
 
     const user = await this.userModel.findById(id);

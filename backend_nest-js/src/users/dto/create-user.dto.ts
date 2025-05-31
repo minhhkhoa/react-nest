@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { IsEmail, IsInt, IsNotEmpty, IsNumber, IsOptional, Min } from 'class-validator';
 
 export class CreateUserDto {
   @IsEmail({}, { message: 'Email không hợp lệ' })
@@ -10,7 +10,12 @@ export class CreateUserDto {
 
   name: string;
   phone?: string;
+
+  @IsInt({ message: 'Tuổi phải là số nguyên' })
+  @Min(0, { message: 'Tuổi phải lớn hơn hoặc bằng 0' })
+  @IsOptional()
   age?: number;
+
   address?: string;
   createdAt?: Date;
   updatedAt?: string;
