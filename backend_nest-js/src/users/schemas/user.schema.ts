@@ -27,7 +27,13 @@ export class User {
   createdAt?: Date;
 
   @Prop()
-  updatedAt?: string;
+  updatedAt?: Date;
+
+  @Prop()
+  deletedAt?: Date;
+
+  @Prop()
+  isDeleted?: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User); //- tạo ra một schema từ class User

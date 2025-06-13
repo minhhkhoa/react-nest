@@ -10,8 +10,9 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     super();
   }
 
+  //- nhận giá trị username và password từ request body client gửi lên
   async validate(username: string, password: string): Promise<User> {
-    const user = await this.authService.validateUser(username, password);
+    const user = await this.authService.validateUser(username, password); //- xác thực
     if (!user) {
       throw new UnauthorizedException();
     }

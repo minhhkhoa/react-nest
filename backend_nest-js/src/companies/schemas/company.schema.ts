@@ -37,6 +37,12 @@ export class Company {
 
   @Prop()
   updatedAt?: string;
+
+  @Prop()
+  deletedAt?: Date;
+
+  @Prop()
+  isDeleted?: boolean;
 }
 
 export const CompanySchema = SchemaFactory.createForClass(Company); //- tạo ra một schema từ class Company

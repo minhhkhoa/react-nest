@@ -16,7 +16,6 @@ import ms from 'ms';
     //- dung async de lay secret va expire tu env
     JwtModule.registerAsync({
       imports: [ConfigModule],
-      // eslint-disable-next-line @typescript-eslint/require-await
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_ACCESS_TOKEN'),
         signOptions: {

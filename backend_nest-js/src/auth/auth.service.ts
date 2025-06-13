@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable } from '@nestjs/common';
 import { User } from 'src/users/schemas/user.schema';
 import { UsersService } from 'src/users/users.service';
@@ -29,13 +27,13 @@ export class AuthService {
     return null;
   }
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   async login(user: any) {
     const payload = {
       username: user.email,
       sub: user._id,
       // password: user.password, //- khong nen dua password vao payload
     };
+    //- mã hóa thông tin người dùng và trả về token
     return {
       access_token: this.jwtService.sign(payload),
     };
