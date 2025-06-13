@@ -17,7 +17,7 @@ export class CompaniesController {
 
   @Post()
   create(@Body() createCompanyDto: CreateCompanyDto) {
-    return this.companiesService.create(createCompanyDto);
+    return this.companiesService.createCompany(createCompanyDto);
   }
 
   @Get()

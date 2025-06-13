@@ -36,7 +36,7 @@ export class Company {
   createdAt?: Date;
 
   @Prop()
-  updatedAt?: string;
+  updatedAt?: Date;
 
   @Prop()
   deletedAt?: Date;

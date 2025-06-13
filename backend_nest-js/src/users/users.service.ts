@@ -14,7 +14,6 @@ import { BadRequestCustom } from 'src/customExceptions/BadRequestCustom';
 
 @Injectable()
 export class UsersService {
-  //- tiêm model User vào constructor lên trang chủ đọc tài liệu hướng dẫn
   constructor(
     @InjectModel(User.name) private userModel: SoftDeleteModel<UserDocument>, //- sử dụng SoftDeleteModel thông qua model UserDocument
   ) {}
