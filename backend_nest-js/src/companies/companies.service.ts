@@ -1,10 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Company, CompanyDocument } from './schemas/company.schema';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { IUser } from 'src/users/users.interface';
+import { BadRequestCustom } from 'src/customExceptions/BadRequestCustom';
+import mongoose from 'mongoose';
 
 @Injectable()
 export class CompaniesService {
@@ -32,8 +34,36 @@ export class CompaniesService {
     return `This action returns a #${id} company`;
   }
 
-  update(id: number, updateCompanyDto: UpdateCompanyDto) {
-    return `This action updates a #${id} company`;
+  async update(id: string, updateCompanyDto: UpdateCompanyDto, user: IUser) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new BadRequestCustom('ID Không hợp lệ!', !!id);
+    }
+
+    try {
+      const result = await this.companyModel.updateOne(
+        { _id: id },
+        {
+          $set: {
+            ...updateCompanyDto,
+            updatedBy: {
+              _id: user._id,
+              name: user.name,
+              email: user.email,
+            },
+          },
+        },
+      );
+
+      if (result.matchedCount === 0) {
+        //- nó sẽ ném lỗi vào khối catch vì đang nằm trong try-catch mà
+        throw new BadRequestCustom(`Công ty có id: ${id} không tồn tại!`, !!id);
+      }
+
+      return result;
+    } catch (error) {
+      //- phải Re-throw để có thể nhận được trên response client
+      throw new BadRequestCustom(error.message, !!error.message);
+    }
   }
 
   remove(id: number) {

@@ -96,8 +96,6 @@ export class UsersService {
   }
 
   async update(updateUserDto: UpdateUserDto) {
-    console.log('data: ', updateUserDto);
-
     return await this.userModel.updateOne(
       { _id: updateUserDto._id },
       { $set: updateUserDto }, //-$set giúp tránh việc ghi đè toàn bộ document; chỉ những trường được chỉ định mới bị thay đổi.
