@@ -18,8 +18,8 @@ export class CreateUserDto {
 
   address?: string;
 
-  @IsNotEmpty({ message: 'Vai trò của người dùng không được để trống' })
-  role: string;
+  // @IsNotEmpty({ message: 'Vai trò của người dùng không được để trống' })
+  // role: string;
   createdAt?: Date;
   updatedAt?: string;
 }

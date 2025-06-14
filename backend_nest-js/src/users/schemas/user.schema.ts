@@ -20,8 +20,8 @@ export class User {
   @Prop()
   age?: number;
 
-  @Prop({ required: true })
-  role: string;
+  // @Prop()
+  // role: string;
 
   @Prop()
   address?: string;

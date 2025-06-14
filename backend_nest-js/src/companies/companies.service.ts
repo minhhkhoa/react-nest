@@ -16,14 +16,19 @@ export class CompaniesService {
   ) {}
 
   async createCompany(createCompanyDto: CreateCompanyDto, user: IUser) {
-    return await this.companyModel.create({
-      ...createCompanyDto,
-      createdBy: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-      },
-    });
+    try {
+      const result = await this.companyModel.create({
+        ...createCompanyDto,
+        createdBy: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+        },
+      });
+      return result;
+    } catch (error) {
+      throw error;
+    }
   }
 
   findAll() {
@@ -66,7 +71,39 @@ export class CompaniesService {
     }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} company`;
+  async remove(id: string, user: IUser) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new BadRequestCustom('ID Không hợp lệ!', !!id);
+    }
+
+
+    //- 8.6
+
+    try {
+      const document = await this.companyModel.findOne({ _id: id });
+      if (!document) {
+        throw new BadRequestCustom(`Công ty có id: ${id} không tồn tại!`, !!id);
+      }
+
+      await this.companyModel.updateOne(
+        { _id: id },
+        {
+          $set: {
+            deletedBy: {
+              _id: user._id,
+              name: user.name,
+              email: user.email,
+            },
+          },
+        },
+      );
+
+      const result = await this.companyModel.softDelete({ _id: id });
+
+      return result;
+      
+    } catch (error) {
+      throw new BadRequestCustom(error.message, !!error.message);
+    }
   }
 }
