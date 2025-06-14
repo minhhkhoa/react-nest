@@ -7,8 +7,10 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './passport/jwt.strategy';
 import ms from 'ms';
+import { AuthController } from './auth.controller';
 
 @Module({
+  controllers: [AuthController],
   imports: [
     UsersModule,
     PassportModule,
@@ -20,7 +22,8 @@ import ms from 'ms';
         secret: configService.get<string>('JWT_ACCESS_TOKEN'),
         signOptions: {
           expiresIn: ms(
-            (configService.get<string>('JWT_ACCESS_EXPIRE') ?? '1d') as ms.StringValue, //-ép kiểu về ms.StringValue vì ms nó nhận ms.StringValue click vào ms để xem
+            (configService.get<string>('JWT_ACCESS_EXPIRE') ??
+              '1d') as ms.StringValue, //-ép kiểu về ms.StringValue vì ms nó nhận ms.StringValue click vào ms để xem
           ),
         },
       }),

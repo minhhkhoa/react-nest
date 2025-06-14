@@ -13,24 +13,4 @@ export class AppController {
     private configService: ConfigService,
     private authService: AuthService,
   ) {}
-
-  @Get()
-  getHello(): string {
-    console.log('check PORT: ', this.configService.get<string>('PORT')); //- cu phap .get<string> la mong muon kieu tra ve la string
-    return this.appService.getHello();
-  }
-
-  @Public() //-route nay se de public khong can xac thuc access_token voi JwtAuthGuard
-  @UseGuards(LocalAuthGuard)
-  @Post('/login')
-  handleLogin(@Request() req: any) {
-    //- req.user được passport tự động trả về khi xác thực thành công người dùng ở hàm validate của  file Strategy, nó sẽ lấy giá trị trả về của hàm validate dán vào req.user
-    return this.authService.login(req.user);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get('/profile')
-  getProfile(@Request() req) {
-    return req.user;
-  }
 }

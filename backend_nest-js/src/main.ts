@@ -10,7 +10,7 @@ async function bootstrap() {
 
   //- use global JwtAuthGuard
   const reflector = app.get(Reflector);
-  // app.useGlobalGuards(new JwtAuthGuard(reflector));
+  app.useGlobalGuards(new JwtAuthGuard(reflector)); //- check xem có gửi token kèm theo không
 
   app.useGlobalPipes(
     new ValidationPipe({

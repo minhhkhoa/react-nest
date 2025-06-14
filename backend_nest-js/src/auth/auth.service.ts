@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { User } from 'src/users/schemas/user.schema';
 import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
+import { IUser } from 'src/users/users.interface';
 
 @Injectable()
 export class AuthService {
@@ -27,15 +28,25 @@ export class AuthService {
     return null;
   }
 
-  async login(user: any) {
+  //-bất kỳ object nào có những 4 trường (_id,name,email,role) đều đủ điều kiện để được coi là IUser
+  async login(user: IUser) {
+    const { _id, name, email, role } = user;
     const payload = {
-      username: user.email,
-      sub: user._id,
-      // password: user.password, //- khong nen dua password vao payload
+      sub: 'token login',
+      iss: 'from server',
+      _id,
+      name,
+      email,
+      role,
     };
-    //- mã hóa thông tin người dùng và trả về token
+
+    //- ngoài việc nhả ra token cho client thì ta trả thêm 1 số thông tin đi kèm
     return {
       access_token: this.jwtService.sign(payload),
+      _id,
+      name,
+      email,
+      role,
     };
   }
 }
