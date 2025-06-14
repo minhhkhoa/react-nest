@@ -17,6 +17,9 @@ export class CreateUserDto {
   age?: number;
 
   address?: string;
+
+  @IsNotEmpty({ message: 'Vai trò của người dùng không được để trống' })
+  role: string;
   createdAt?: Date;
   updatedAt?: string;
 }
