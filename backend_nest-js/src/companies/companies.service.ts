@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -7,6 +7,7 @@ import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { IUser } from 'src/users/users.interface';
 import { BadRequestCustom } from 'src/customExceptions/BadRequestCustom';
 import mongoose from 'mongoose';
+import aqp from 'api-query-params';
 
 @Injectable()
 export class CompaniesService {
@@ -31,8 +32,38 @@ export class CompaniesService {
     }
   }
 
-  findAll() {
-    return `This action returns all companies`;
+  async findAll(currentPage: number, limit: number, query: string) {
+    const { filter, sort, projection, population } = aqp(query);
+    delete filter.page;
+    delete filter.limit;
+
+    const defaultPage = currentPage > 0 ? +currentPage : 1;
+    let offset = (+defaultPage - 1) * +limit;
+    let defaultLimit = +limit ? +limit : 10;
+
+    const totalItems = (await this.companyModel.find(filter)).length;
+    const totalPages = Math.ceil(totalItems / defaultLimit);
+
+    const result = await this.companyModel
+      .find(filter)
+      .skip(offset)
+      .limit(defaultLimit)
+      // @ts-ignore: Unreachable code error
+      // .sort(sort)
+      .populate(population)
+      .exec();
+
+      return {
+        meta: {
+          current: defaultPage,
+          pageSize: limit,
+          pages: totalPages,
+          total: totalItems,
+        },
+        result,
+      };
+  
+
   }
 
   findOne(id: number) {
@@ -76,7 +107,6 @@ export class CompaniesService {
       throw new BadRequestCustom('ID Không hợp lệ!', !!id);
     }
 
-
     //- 8.6
 
     try {
@@ -99,9 +129,7 @@ export class CompaniesService {
       );
 
       const result = await this.companyModel.softDelete({ _id: id });
-
       return result;
-      
     } catch (error) {
       throw new BadRequestCustom(error.message, !!error.message);
     }
