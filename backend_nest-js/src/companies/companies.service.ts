@@ -33,7 +33,7 @@ export class CompaniesService {
   }
 
   async findAll(currentPage: number, limit: number, query: string) {
-    const { filter, sort, projection, population } = aqp(query);
+    const { filter, sort, population } = aqp(query);
     delete filter.page;
     delete filter.limit;
 
@@ -48,8 +48,7 @@ export class CompaniesService {
       .find(filter)
       .skip(offset)
       .limit(defaultLimit)
-      // @ts-ignore: Unreachable code error
-      // .sort(sort)
+      .sort(sort as any) //- xung đột type hàm sort của mongoose với sort của aqp
       .populate(population)
       .exec();
 
