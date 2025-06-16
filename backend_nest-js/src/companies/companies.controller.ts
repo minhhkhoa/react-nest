@@ -13,6 +13,7 @@ import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { User } from 'src/decorator/customize';
 import { IUser } from 'src/users/users.interface';
+import {  ParseIntPipeCustom } from './dto/ParseInt.pipe';
 
 @Controller('companies')
 export class CompaniesController {
@@ -25,11 +26,12 @@ export class CompaniesController {
 
   @Get()
   findAll(
-    @Query('page') page: string,
-    @Query('limit') limit: string,
+    //- vì trong main mình có config pipe global nên nó chạy trước cả pipe custom mình viết dưới này. Nếu để type tham số là string thì nó sẽ không chạy pipe global. Còn nếu để number thì nó sẽ chạy pipe global trước khi chạy pipe custom, đó là cách chạy của NestJS.
+    @Query('page', new ParseIntPipeCustom()) page: number,
+    @Query('limit', new ParseIntPipeCustom()) limit: number,
     @Query() query: string,
   ) {
-    return this.companiesService.findAll(+page, +limit, query);
+    return this.companiesService.findAll(page, limit, query);
   }
 
   @Get(':id')
