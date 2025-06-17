@@ -11,15 +11,17 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { userDecorator } from 'src/decorator/customize';
+import { IUser } from './users.interface';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
+  create(@Body() createUserDto: CreateUserDto, @userDecorator() user: IUser) {
     //- @Body() === req.body
-    return this.usersService.create(createUserDto);
+    return this.usersService.create(createUserDto, user);
   }
 
   @Get("")

@@ -11,6 +11,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { compareSync, genSaltSync, hashSync } from 'bcryptjs';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { BadRequestCustom } from 'src/customExceptions/BadRequestCustom';
+import { IUser } from './users.interface';
 
 @Injectable()
 export class UsersService {
@@ -24,7 +25,7 @@ export class UsersService {
     return hash;
   }
 
-  async create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto, user: IUser) {
     const email = createUserDto.email;
 
     const checkEmail = await this.userModel.findOne({ email });
@@ -38,9 +39,19 @@ export class UsersService {
     const hashPassword: string = this.getHashPassword(createUserDto.password);
     createUserDto.password = hashPassword;
 
-    
-    const user = await this.userModel.create(createUserDto);
-    return user;
+    const createUser = await this.userModel.create({
+      ...createUserDto,
+      createdBy: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+    });
+
+    return {
+      _id: createUser._id,
+      createdAt: createUser.createdAt,
+    };
   }
 
   findAll() {
