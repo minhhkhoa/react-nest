@@ -4,9 +4,7 @@ import {
   IsInt,
   IsNotEmpty,
   IsNotEmptyObject,
-  IsNumber,
   IsObject,
-  IsOptional,
   Min,
   ValidateNested,
 } from 'class-validator';
