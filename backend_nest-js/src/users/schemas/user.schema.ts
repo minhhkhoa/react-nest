@@ -1,10 +1,13 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import mongoose, { HydratedDocument } from 'mongoose';
 
 export type UserDocument = HydratedDocument<User>; //- đây là một kiểu dữ liệu mới được tạo ra từ HydratedDocument<User> để đại diện cho một document của User
 
 @Schema({ timestamps: true }) //- đánh dấu class User là một schema trong mongoose timestamps: true sử dụng cho field createdAt và updatedAt
 export class User {
+  @Prop()
+  name: string;
+
   @Prop({ required: true }) //- đánh dấu thuộc tính name là một field trong schema
   email: string;
 
@@ -12,19 +15,25 @@ export class User {
   password: string;
 
   @Prop()
-  name: string;
+  age: number;
 
   @Prop()
-  phone?: string;
+  gender: string;
 
   @Prop()
-  age?: number;
+  address: string;
 
-  // @Prop()
-  // role: string;
+  @Prop({ type: Object })
+  company: {
+    _id: mongoose.Schema.Types.ObjectId;
+    name: string;
+  };
 
   @Prop()
-  address?: string;
+  role: string;
+
+  @Prop()
+  refreshToken: string;
 
   @Prop()
   createdAt?: Date;
@@ -33,10 +42,31 @@ export class User {
   updatedAt?: Date;
 
   @Prop()
-  deletedAt?: Date;
+  isDeleted?: boolean;
+
+  @Prop({ type: Object })
+  createdBy: {
+    _id: mongoose.Schema.Types.ObjectId;
+    name: string;
+    email: string;
+  };
+
+  @Prop({ type: Object })
+  updatedBy: {
+    _id: mongoose.Schema.Types.ObjectId;
+    name: string;
+    email: string;
+  };
+
+  @Prop({ type: Object })
+  deletedBy: {
+    _id: mongoose.Schema.Types.ObjectId;
+    name: string;
+    email: string;
+  };
 
   @Prop()
-  isDeleted?: boolean;
+  deletedAt?: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User); //- tạo ra một schema từ class User
