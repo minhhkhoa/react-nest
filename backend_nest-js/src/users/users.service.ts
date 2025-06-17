@@ -58,45 +58,20 @@ export class UsersService {
     return `This action returns all users`;
   }
 
-  /**
-   * Tìm user theo id hoặc username
-   * @param criteria { id?: string; username?: string; }
-   * @returns Một đối tượng user hoặc mảng user nếu tìm theo username
-   */
-  async findUser(criteria: {
-    id?: string;
-    username?: string;
-  }): Promise<User | { users: User[]; total: number; message: string }> {
-    if (criteria.id) {
-      // Kiểm tra id hợp lệ với mongoose
-      if (!mongoose.Types.ObjectId.isValid(criteria.id)) {
-        throw new BadRequestCustom(
-          'Id người dùng không hợp lệ!',
-          !!criteria.id,
-        );
-      }
-      const user = await this.userModel.findById({ _id: criteria.id });
+  async findUser(id: string) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new BadRequestCustom('Id người dùng không hợp lệ!', !!id);
+    }
+
+    try {
+      const user = await this.userModel.findById(id).select('-password');
       if (!user) {
-        throw new NotFoundException('User not found!');
+        throw new BadRequestCustom('Không tìm thấy người dùng!', !!user);
       }
+
       return user;
-    } else if (criteria.username) {
-      // Tìm kiếm user theo username không phân biệt hoa thường
-      const users = await this.userModel.find({
-        name: new RegExp(criteria.username, 'i'),
-      });
-      if (!users.length) {
-        throw new NotFoundException(`Không tìm thấy user ${criteria.username}`);
-      }
-      return {
-        users: users,
-        total: users.length,
-        message: `Tìm thấy ${users.length} người dùng`,
-      };
-    } else {
-      throw new BadRequestException(
-        'You must provide either an id or a username.',
-      );
+    } catch (error) {
+      throw new BadRequestCustom(error.message, !!error.message);
     }
   }
 
@@ -141,7 +116,7 @@ export class UsersService {
             name: user.name,
             email: user.email,
           };
-      
+
       const filter = { _id: updateUserDto._id };
       const update = {
         $set: {
