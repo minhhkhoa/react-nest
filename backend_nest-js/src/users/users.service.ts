@@ -108,11 +108,48 @@ export class UsersService {
     return await this.userModel.findOne({ email });
   }
 
-  async update(updateUserDto: UpdateUserDto) {
-    return await this.userModel.updateOne(
-      { _id: updateUserDto._id },
-      { $set: updateUserDto }, //-$set giúp tránh việc ghi đè toàn bộ document; chỉ những trường được chỉ định mới bị thay đổi.
-    );
+  async update(updateUserDto: UpdateUserDto, user: IUser) {
+    if (!mongoose.Types.ObjectId.isValid(updateUserDto._id)) {
+      throw new BadRequestCustom(
+        'Id người dùng không hợp lệ!',
+        !!updateUserDto._id,
+      );
+    }
+    try {
+      const checkUser = await this.userModel.findById(updateUserDto._id);
+      if (!checkUser) {
+        throw new BadRequestCustom('Không tìm thấy người dùng!');
+      }
+
+      const filterEmail = {
+        email: updateUserDto.email,
+        _id: { $ne: updateUserDto._id }, //- trừ đứa đang cần update ra(ne--->not equal)
+      };
+      const checkEmail = await this.userModel.findOne(filterEmail);
+      if (checkEmail) {
+        throw new BadRequestCustom(
+          'Email đã tồn tại hãy chọn một email khác!',
+          !!checkEmail,
+        );
+      }
+
+      const filter = { _id: updateUserDto._id };
+      const update = {
+        $set: {
+          ...updateUserDto,
+          updatedBy: {
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+          },
+        },
+      };
+      const result = await this.userModel.updateOne(filter, update);
+
+      return result;
+    } catch (error) {
+      throw new BadRequestCustom(error.message, !!error.message);
+    }
   }
 
   async remove(id: string) {

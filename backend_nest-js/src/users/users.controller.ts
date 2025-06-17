@@ -11,7 +11,7 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { userDecorator } from 'src/decorator/customize';
+import { ResponseMessage, userDecorator } from 'src/decorator/customize';
 import { IUser } from './users.interface';
 
 @Controller('users')
@@ -19,12 +19,13 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
+  @ResponseMessage('Create a new User')
   create(@Body() createUserDto: CreateUserDto, @userDecorator() user: IUser) {
     //- @Body() === req.body
     return this.usersService.create(createUserDto, user);
   }
 
-  @Get("")
+  @Get('')
   findAll() {
     return this.usersService.findAll();
   }
@@ -36,8 +37,9 @@ export class UsersController {
 
   //- cho hết vào body kể cả id
   @Patch()
-  update(@Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(updateUserDto);
+  @ResponseMessage('Update a User')
+  update(@Body() updateUserDto: UpdateUserDto, @userDecorator() user: IUser) {
+    return this.usersService.update(updateUserDto, user);
   }
 
   @Delete('delete/:id')
