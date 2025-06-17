@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
+import { BadRequestCustom } from 'src/customExceptions/BadRequestCustom';
 import { IS_PUBLIC_KEY } from 'src/decorator/customize';
 
 @Injectable()
@@ -28,7 +29,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   handleRequest(err: any, user: any, info: any) {
     // You can throw an exception based on either "info" or "err" arguments
     if (err || !user) {
-      throw err || new UnauthorizedException('Token không hợp lệ or không có Beaer Token ở Header Request!');
+      throw err || new BadRequestCustom('Token không hợp lệ or không có Beaer Token ở Header Request!');
     }
     return user;
   }

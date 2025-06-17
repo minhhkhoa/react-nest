@@ -9,13 +9,12 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
 
-  //- use global interceptor
-  app.useGlobalInterceptors(new TransformInterceptor());
-
   //- use global JwtAuthGuard
   const reflector = app.get(Reflector);
   app.useGlobalGuards(new JwtAuthGuard(reflector)); //- check xem có gửi token kèm theo không
 
+  //- use global interceptor
+  app.useGlobalInterceptors(new TransformInterceptor(reflector));
   //- use global pipe
   app.useGlobalPipes(
     new ValidationPipe({
