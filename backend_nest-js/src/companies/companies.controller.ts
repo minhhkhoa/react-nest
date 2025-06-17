@@ -11,7 +11,7 @@ import {
 import { CompaniesService } from './companies.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
-import { ResponseMessage, User } from 'src/decorator/customize';
+import { ResponseMessage, userDecorator } from 'src/decorator/customize';
 import { IUser } from 'src/users/users.interface';
 import {  ParseIntPipeCustom } from './dto/ParseInt.pipe';
 
@@ -20,13 +20,16 @@ export class CompaniesController {
   constructor(private readonly companiesService: CompaniesService) {}
 
   @Post()
-  @ResponseMessage("Create a new company")
-  create(@Body() createCompanyDto: CreateCompanyDto, @User() user: IUser) {
+  @ResponseMessage('Create a new company')
+  create(
+    @Body() createCompanyDto: CreateCompanyDto,
+    @userDecorator() user: IUser,
+  ) {
     return this.companiesService.createCompany(createCompanyDto, user);
   }
 
   @Get()
-  @ResponseMessage("Get list companies with paginate")
+  @ResponseMessage('Get list companies with paginate')
   findAll(
     //- vì trong main mình có config pipe global nên nó chạy trước cả pipe custom mình viết dưới này. Nếu để type tham số là string thì nó sẽ không chạy pipe global. Còn nếu để number thì nó sẽ chạy pipe global trước khi chạy pipe custom, đó là cách chạy của NestJS.
     @Query('page', new ParseIntPipeCustom()) page: number,
@@ -46,13 +49,13 @@ export class CompaniesController {
   update(
     @Param('id') id: string,
     @Body() updateCompanyDto: UpdateCompanyDto,
-    @User() user: IUser,
+    @userDecorator() user: IUser,
   ) {
     return this.companiesService.update(id, updateCompanyDto, user);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string, @User() user: IUser) {
+  remove(@Param('id') id: string, @userDecorator() user: IUser) {
     return this.companiesService.remove(id, user);
   }
 }

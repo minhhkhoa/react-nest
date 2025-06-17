@@ -18,6 +18,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   //- supper trên sẽ giúp ta decode và tự động dán vào payload cho hàm validate bên dưới và gọi nó luôn
   async validate(payload: IUser) {
+    //- nói cách khác payload nó là data mà bên sign(payload) sử dụng
     const { _id, name, email, role } = payload;
     return {
       _id,
