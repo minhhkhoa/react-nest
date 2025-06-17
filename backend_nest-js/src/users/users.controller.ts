@@ -25,9 +25,14 @@ export class UsersController {
     return this.usersService.create(createUserDto, user);
   }
 
-  @Get('')
-  findAll() {
-    return this.usersService.findAll();
+  @Get()
+  @ResponseMessage('Fetch users with paginate')
+  findAll(
+    @Query('page') page: number,
+    @Query('limit') limit: number,
+    @Query() query: string,
+  ) {
+    return this.usersService.findAll(page, limit, query);
   }
 
   @Get('/:id')

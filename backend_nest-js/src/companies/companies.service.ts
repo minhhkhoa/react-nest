@@ -60,9 +60,7 @@ export class CompaniesService {
           total: totalItems,
         },
         result,
-      };
-  
-
+      }
   }
 
   findOne(id: number) {
