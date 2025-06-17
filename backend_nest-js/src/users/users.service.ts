@@ -37,6 +37,8 @@ export class UsersService {
 
     const hashPassword: string = this.getHashPassword(createUserDto.password);
     createUserDto.password = hashPassword;
+
+    
     const user = await this.userModel.create(createUserDto);
     return user;
   }
@@ -91,7 +93,7 @@ export class UsersService {
     return compareSync(password, hashPassword);
   }
 
-  async login(email: string) {
+  async checkEmailExist(email: string) {
     return await this.userModel.findOne({ email });
   }
 
