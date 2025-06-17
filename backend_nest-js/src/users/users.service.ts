@@ -133,6 +133,15 @@ export class UsersService {
         );
       }
 
+      //- nếu có thì để nguyên không thì lấy người tạo là người đang login
+      const createdBy = checkUser.createdBy
+        ? checkUser.createdBy
+        : {
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+          };
+      
       const filter = { _id: updateUserDto._id };
       const update = {
         $set: {
@@ -142,6 +151,7 @@ export class UsersService {
             name: user.name,
             email: user.email,
           },
+          createdBy,
         },
       };
       const result = await this.userModel.updateOne(filter, update);
@@ -152,19 +162,35 @@ export class UsersService {
     }
   }
 
-  async remove(id: string) {
+  async remove(id: string, user: IUser) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       throw new BadRequestCustom('Id người dùng không hợp lệ!', !!id);
     }
 
-    const user = await this.userModel.findById(id);
+    try {
+      const checkUser = await this.userModel.findById(id);
 
-    if (!user) {
-      return {
-        message: 'not found user want delete!',
+      if (!checkUser) {
+        throw new BadRequestCustom('Không tìm thấy người dùng!');
+      }
+
+      const filter = { _id: id };
+      const update = {
+        $set: {
+          deletedBy: {
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+          },
+        },
       };
-    }
+      await this.userModel.updateOne(filter, update);
 
-    return await this.userModel.softDelete({ _id: id }); //- hàm softDelete là của soft-delete-plugin-mongoose nó sẽ giúp thêm 2 field deletedAt và isDeleted vào csdl
+      //- hàm softDelete là của soft-delete-plugin-mongoose nó sẽ giúp thêm 2 field deletedAt và isDeleted vào csdl
+      const result = await this.userModel.softDelete({ _id: id });
+      return result;
+    } catch (error) {
+      throw new BadRequestCustom(error.message, !!error.message);
+    }
   }
 }
