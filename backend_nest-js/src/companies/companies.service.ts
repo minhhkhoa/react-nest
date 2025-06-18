@@ -34,8 +34,8 @@ export class CompaniesService {
 
   async findAll(currentPage: number, limit: number, query: string) {
     const { filter, sort, population } = aqp(query);
-    delete filter.page;
-    delete filter.limit;
+    delete filter.current;
+    delete filter.pageSize;
 
     const defaultPage = currentPage > 0 ? +currentPage : 1;
     let offset = (+defaultPage - 1) * +limit;
@@ -52,15 +52,15 @@ export class CompaniesService {
       .populate(population)
       .exec();
 
-      return {
-        meta: {
-          current: defaultPage,
-          pageSize: limit,
-          pages: totalPages,
-          total: totalItems,
-        },
-        result,
-      }
+    return {
+      meta: {
+        current: defaultPage,
+        pageSize: limit,
+        pages: totalPages,
+        total: totalItems,
+      },
+      result,
+    };
   }
 
   findOne(id: number) {
