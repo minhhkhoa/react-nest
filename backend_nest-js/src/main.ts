@@ -40,9 +40,10 @@ async function bootstrap() {
 
   //- config cors
   app.enableCors({
-    origin: 'http://localhost:3000', //- domain client
+    origin: true, //- domain client
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     preflightContinue: false,
+    credentials: true,
   });
 
   await app.listen(configService.get<string>('PORT') ?? 3000);
