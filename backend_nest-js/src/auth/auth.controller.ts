@@ -40,7 +40,6 @@ export class AuthController {
     return this.authService.registerUser(registerUserDto);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('account')
   getProfile(@userDecorator() user: IUser) {
     return { user };
@@ -48,7 +47,6 @@ export class AuthController {
 
   //- xử lý refresh token khi access_token hết hạn gặp lỗi 401 ( 401 là lỗi ko truyền access_token hoặc access_token hết hạn )
   //-khi nhận code 401, client (frontend) sẽ TỰ ĐỘNG gọi API refresh_token, sử dụng token này để đổi lấy {access_token, refresh_token} mới.
-  @UseGuards(JwtAuthGuard)
   @Public() //- phải để public vì khi này access_token đâu còn hợp lệ
   @ResponseMessage('Get User by refresh token')
   @Get('refresh')
@@ -59,5 +57,14 @@ export class AuthController {
     const refreshToken = request.cookies['refresh_token'];
 
     return await this.authService.processNewToken(refreshToken, response);
+  }
+
+  @Post('logout')
+  @ResponseMessage('Logout User')
+  handleLogout(
+    @Res({ passthrough: true }) response: Response,
+    @userDecorator() user: IUser,
+  ) {
+    return this.authService.logout(response, user);
   }
 }

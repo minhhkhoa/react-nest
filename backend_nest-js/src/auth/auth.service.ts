@@ -11,7 +11,7 @@ import { BadRequestCustom } from 'src/customExceptions/BadRequestCustom';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { ConfigService } from '@nestjs/config';
-import { Response } from 'express';
+import { response, Response } from 'express';
 
 import ms from 'ms';
 
@@ -63,12 +63,9 @@ export class AuthService {
     response.cookie('refresh_token', refreshToken, {
       httpOnly: true,
       //- maxAge là thoi gian hieu luc cua cookie tính theo ms
-      maxAge:
-        ms(
-          this.configService.get<string>(
-            'JWT_REFRESH_EXPIRE',
-          ) as ms.StringValue,
-        ),
+      maxAge: ms(
+        this.configService.get<string>('JWT_REFRESH_EXPIRE') as ms.StringValue,
+      ),
     });
 
     //- ngoài việc nhả ra token cho client thì ta trả thêm 1 số thông tin đi kèm
@@ -168,6 +165,23 @@ export class AuthService {
       return result;
     } catch (error) {
       throw new UnauthorizedException('Refresh_token khong hop le!');
+    }
+  };
+
+  logout = async (response: Response, user: IUser) => {
+    try {
+      const filter = { _id: user._id };
+      const update = {
+        $set: {
+          refreshToken: '',
+        },
+      };
+      const result = await this.userModel.updateOne(filter, update);
+      response.clearCookie('refresh_token');
+
+      if (result.matchedCount == 1) return 'OK';
+    } catch (error) {
+      throw new BadRequestCustom(error.message, !!error.message);
     }
   };
 }
