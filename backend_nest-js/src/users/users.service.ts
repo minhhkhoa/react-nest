@@ -216,4 +216,11 @@ export class UsersService {
       throw new BadRequestCustom(error.message, !!error.message);
     }
   };
+
+  findUserByRefreshToken = async (refreshToken: string) => {
+    if (!refreshToken) {
+      throw new BadRequestCustom('Refresh token không hợp lệ!', !!refreshToken);
+    }
+    return await this.userModel.findOne({ refreshToken });
+  };
 }
