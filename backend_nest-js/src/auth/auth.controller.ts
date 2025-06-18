@@ -13,6 +13,7 @@ export class AuthController {
   @Public()
   @UseGuards(LocalAuthGuard)
   @Post('/login')
+  @ResponseMessage("User login")
   handleLogin(@Request() req: any) {
     //- req.user được passport tự động trả về khi xác thực thành công người dùng ở hàm validate của file Strategy, nó sẽ lấy giá trị trả về của hàm validate dán vào req.user
     return this.authService.login(req.user);

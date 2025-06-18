@@ -6,10 +6,13 @@ import { IUser } from 'src/users/users.interface';
 import { BadRequestCustom } from 'src/customExceptions/BadRequestCustom';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { InjectModel } from '@nestjs/mongoose';
+import { ConfigService } from '@nestjs/config';
+import ms from 'ms';
 
 @Injectable()
 export class AuthService {
   constructor(
+    private configService: ConfigService,
     private usersService: UsersService,
     private jwtService: JwtService,
     @InjectModel(User.name) private userModel: SoftDeleteModel<UserDocument>, //- tiêm vào để có thể tương tác vs csdl
@@ -44,13 +47,18 @@ export class AuthService {
       role,
     };
 
+    const refreshToken = this.createRefreshToken({ name: 'khoahii' });
+
     //- ngoài việc nhả ra token cho client thì ta trả thêm 1 số thông tin đi kèm
     return {
       access_token: this.jwtService.sign(payload),
-      _id,
-      name,
-      email,
-      role,
+      refreshToken,
+      user: {
+        _id,
+        name,
+        email,
+        role,
+      },
     };
   }
 
@@ -77,4 +85,18 @@ export class AuthService {
       createdAt: user.createdAt,
     };
   }
+
+  createRefreshToken = (payload: any) => {
+    //- đây là cách để mình tạo ra refresh_token với jwt
+    const refreshToken = this.jwtService.sign(payload, {
+      secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
+      expiresIn:
+        ms(
+          (this.configService.get<string>('JWT_REFRESH_EXPIRE') ??
+            '1d') as ms.StringValue,
+        ) / 1000, //- ms: mili-seconds còn jwt là second (1 second = 1000 mili-seconds)
+    });
+
+    return refreshToken;
+  };
 }
