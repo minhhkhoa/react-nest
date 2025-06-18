@@ -7,6 +7,8 @@ import { BadRequestCustom } from 'src/customExceptions/BadRequestCustom';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { ConfigService } from '@nestjs/config';
+import { Response } from 'express';
+
 import ms from 'ms';
 
 @Injectable()
@@ -36,7 +38,7 @@ export class AuthService {
   }
 
   //-bất kỳ object nào có những 4 trường (_id,name,email,role) đều đủ điều kiện để được coi là IUser
-  async login(user: IUser) {
+  async login(user: IUser, response: Response) {
     const { _id, name, email, role } = user;
     const payload = {
       sub: 'token login',
@@ -49,10 +51,21 @@ export class AuthService {
 
     const refreshToken = this.createRefreshToken({ name: 'khoahii' });
 
+    //- update user with refreshToken
+    await this.usersService.updateUserRefreshToken(_id, refreshToken);
+
+    //-set refresh_token to cookie
+    response.cookie('refresh_token', refreshToken, {
+      httpOnly: true,
+      //- maxAge là thoi gian hieu luc cua cookie tính theo ms
+      maxAge: ms(
+        this.configService.get<string>('JWT_REFRESH_EXPIRE') as ms.StringValue,
+      ),
+    });
+
     //- ngoài việc nhả ra token cho client thì ta trả thêm 1 số thông tin đi kèm
     return {
       access_token: this.jwtService.sign(payload),
-      refreshToken,
       user: {
         _id,
         name,

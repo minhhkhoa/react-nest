@@ -1,6 +1,4 @@
-import {
-  Injectable,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import mongoose from 'mongoose';
@@ -195,4 +193,27 @@ export class UsersService {
       throw new BadRequestCustom(error.message, !!error.message);
     }
   }
+
+  updateUserRefreshToken = async (id: string, refreshToken: string) => {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new BadRequestCustom('Id người dùng không hợp lệ!', !!id);
+    }
+    try {
+      const checkUser = await this.userModel.findById(id);
+      if (!checkUser) {
+        throw new BadRequestCustom('Không tìm thấy người dùng!');
+      }
+
+      const filter = { _id: id };
+      const update = {
+        $set: {
+          refreshToken,
+        },
+      };
+      const result = await this.userModel.updateOne(filter, update);
+      return result;
+    } catch (error) {
+      throw new BadRequestCustom(error.message, !!error.message);
+    }
+  };
 }
