@@ -1,10 +1,24 @@
-import { Body, Controller, Get, Post, Req, Request, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Req,
+  Request,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { LocalAuthGuard } from './local-auth.guard';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
-import { Public, ResponseMessage } from 'src/decorator/customize';
+import {
+  Public,
+  ResponseMessage,
+  userDecorator,
+} from 'src/decorator/customize';
 import { RegisterUserDto } from 'src/users/dto/create-user.dto';
 import { Response } from 'express';
+import { IUser } from 'src/users/users.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -15,10 +29,7 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('/login')
   @ResponseMessage('User login')
-  handleLogin(
-    @Req() req: any,
-    @Res({ passthrough: true }) response: Response,
-  ) {
+  handleLogin(@Req() req: any, @Res({ passthrough: true }) response: Response) {
     //- req.user được passport tự động trả về khi xác thực thành công người dùng ở hàm validate của file Strategy, nó sẽ lấy giá trị trả về của hàm validate dán vào req.user
     return this.authService.login(req.user, response);
   }
@@ -31,8 +42,8 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('/profile')
-  getProfile(@Request() req: any) {
-    return req.user;
+  @Get('account')
+  getProfile(@userDecorator() user: IUser) {
+    return { user };
   }
 }
