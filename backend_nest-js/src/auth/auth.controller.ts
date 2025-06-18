@@ -4,7 +4,6 @@ import {
   Get,
   Post,
   Req,
-  Request,
   Res,
   UseGuards,
 } from '@nestjs/common';
@@ -45,5 +44,19 @@ export class AuthController {
   @Get('account')
   getProfile(@userDecorator() user: IUser) {
     return { user };
+  }
+
+  //- xử lý refresh token khi access_token hết hạn gặp lỗi 401 ( 401 là lỗi ko truyền access_token hoặc access_token hết hạn )
+  //-khi nhận code 401, client (frontend) sẽ TỰ ĐỘNG gọi API refresh_token, sử dụng token này để đổi lấy {access_token, refresh_token} mới.
+  @UseGuards(JwtAuthGuard)
+  @Public() //- phải để public vì khi này access_token đâu còn hợp lệ
+  @ResponseMessage('Get User by refresh token')
+  @Get('refresh')
+  async handleRefreshToken(
+    @Req() request: any,
+  ) {
+    const refreshToken = request.cookies['refresh_token'];
+
+    return await this.authService.processNewToken(refreshToken)
   }
 }

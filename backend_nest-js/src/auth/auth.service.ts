@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { User, UserDocument } from 'src/users/schemas/user.schema';
 import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
@@ -49,7 +49,7 @@ export class AuthService {
       role,
     };
 
-    const refreshToken = this.createRefreshToken({ name: 'khoahii' });
+    const refreshToken = this.createRefreshToken(payload);
 
     //- update user with refreshToken
     await this.usersService.updateUserRefreshToken(_id, refreshToken);
@@ -60,7 +60,7 @@ export class AuthService {
       //- maxAge là thoi gian hieu luc cua cookie tính theo ms
       maxAge: ms(
         this.configService.get<string>('JWT_REFRESH_EXPIRE') as ms.StringValue,
-      ),
+      ) * 1000,
     });
 
     //- ngoài việc nhả ra token cho client thì ta trả thêm 1 số thông tin đi kèm
@@ -105,11 +105,25 @@ export class AuthService {
       secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
       expiresIn:
         ms(
-          (this.configService.get<string>('JWT_REFRESH_EXPIRE') ??
-            '1d') as ms.StringValue,
+          this.configService.get<string>(
+            'JWT_REFRESH_EXPIRE',
+          ) as ms.StringValue,
         ) / 1000, //- ms: mili-seconds còn jwt là second (1 second = 1000 mili-seconds)
     });
 
     return refreshToken;
+  };
+
+  processNewToken = async (refreshToken: string) => {
+    try {
+      //-gia ma refresh_token để xem nó có hợp lệ hay ko (ko hợp lệ khi ko đúng định dang, hoặc refresh_token hết thời hạn - cái thời hạn đó do mình gán khi lưu vào cookie ở hàm login bên trên)
+      let a = this.jwtService.verify(refreshToken, {
+        secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
+      });
+
+      console.log(a);
+    } catch (error) {
+      throw new BadRequestException('Refresh_token khong hop le!');
+    }
   };
 }
