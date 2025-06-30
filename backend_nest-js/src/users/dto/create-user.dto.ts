@@ -10,7 +10,7 @@ import {
 } from 'class-validator';
 import mongoose from 'mongoose';
 
-class Company { //- mục đích để validate cho nested_obj company
+export class Company { //- mục đích để validate cho nested_obj company
   @IsNotEmpty()
   _id: mongoose.Schema.Types.ObjectId;
   @IsNotEmpty()
