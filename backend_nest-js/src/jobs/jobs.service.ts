@@ -6,6 +6,7 @@ import { Job, JobDocument } from './schemas/job.schema';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { BadRequestCustom } from 'src/customExceptions/BadRequestCustom';
+import mongoose from 'mongoose';
 
 @Injectable()
 export class JobsService {
@@ -40,8 +41,34 @@ export class JobsService {
     return `This action returns a #${id} job`;
   }
 
-  update(id: number, updateJobDto: UpdateJobDto) {
-    return `This action updates a #${id} job`;
+  async update(id: string, updateJobDto: UpdateJobDto, user: IUser) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new BadRequestCustom('Id Job không hợp lệ!', !!id);
+    }
+    try {
+      const checkJob = await this.jobModel.findById(id);
+      if (!checkJob) {
+        throw new BadRequestCustom(`Không tìm thấy job với id ${id}`);
+      }
+
+      const filter = { _id: id };
+      const update = {
+        $set: {
+          ...updateJobDto,
+          updatedBy: {
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+          },
+        },
+      };
+
+      const result = await this.jobModel.updateOne(filter, update);
+
+      return result;
+    } catch (error) {
+      throw new BadRequestCustom(error.message, !!error.message);
+    }
   }
 
   remove(id: number) {
