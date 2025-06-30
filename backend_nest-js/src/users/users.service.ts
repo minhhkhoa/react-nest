@@ -142,7 +142,7 @@ export class UsersService {
             email: user.email,
           };
 
-      const filter = { _id: updateUserDto._id };
+      const filter = { _id: updateUserDto._id, isDeleted: false };
       const update = {
         $set: {
           ...updateUserDto,

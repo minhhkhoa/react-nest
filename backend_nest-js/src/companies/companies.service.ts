@@ -73,24 +73,24 @@ export class CompaniesService {
     }
 
     try {
-      const result = await this.companyModel.updateOne(
-        { _id: id },
-        {
-          $set: {
-            ...updateCompanyDto,
-            updatedBy: {
-              _id: user._id,
-              name: user.name,
-              email: user.email,
-            },
-          },
-        },
-      );
-
-      if (result.matchedCount === 0) {
-        //- nó sẽ ném lỗi vào khối catch vì đang nằm trong try-catch mà
+      const checkCompany = await this.companyModel.findById(id);
+      if (!checkCompany) {
         throw new BadRequestCustom(`Công ty có id: ${id} không tồn tại!`, !!id);
       }
+
+      const filter = { _id: id, isDeleted: false };
+      const update = {
+        $set: {
+          ...updateCompanyDto,
+          updatedBy: {
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+          },
+        },
+      };
+
+      const result = await this.companyModel.updateOne(filter, update);
 
       return result;
     } catch (error) {

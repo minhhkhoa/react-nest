@@ -51,7 +51,7 @@ export class JobsService {
         throw new BadRequestCustom(`Không tìm thấy job với id ${id}`);
       }
 
-      const filter = { _id: id };
+      const filter = { _id: id, isDeleted: false };
       const update = {
         $set: {
           ...updateJobDto,
@@ -71,7 +71,34 @@ export class JobsService {
     }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} job`;
+  async remove(id: string, user: IUser) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new BadRequestCustom('Id Job không hợp lệ!', !!id);
+    }
+
+    try {
+      const checkUser = await this.jobModel.findById(id);
+
+      if (!checkUser) {
+        throw new BadRequestCustom(`Không tìm thấy job với id ${id}`);
+      }
+
+      const filter = { _id: id };
+      const update = {
+        $set: {
+          deletedBy: {
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+          },
+        },
+      };
+      await this.jobModel.updateOne(filter, update);
+
+      const result = await this.jobModel.softDelete({ _id: id });
+      return result;
+    } catch (error) {
+      throw new BadRequestCustom(error.message, !!error.message);
+    }
   }
 }
