@@ -42,7 +42,7 @@ export class CreateJobDto {
   @IsNotEmpty({ message: 'Kỹ năng không được để trống' })
   @IsArray({ message: 'Skills có định danh là array' })
   @IsString({ each: true, message: 'Mỗi skill sẽ phải là string' })
-  skills: string;
+  skills: string[];
 
   @IsNotEmptyObject({}, { message: 'Thông tin công ty không hợp lệ' })
   @IsObject({ message: 'Thông tin công ty không hợp lệ' })
