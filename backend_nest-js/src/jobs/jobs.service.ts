@@ -37,8 +37,21 @@ export class JobsService {
     return `This action returns all jobs`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} job`;
+  async findOne(id: string) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new BadRequestCustom('Id Job không hợp lệ!', !!id);
+    }
+
+    try {
+      const checkJob = await this.jobModel.findById(id);
+      if (!checkJob) {
+        throw new BadRequestCustom(`Không tìm thấy job với id ${id}`);
+      }
+
+      return checkJob;
+    } catch (error) {
+      throw new BadRequestCustom(error.message, !!error.message);
+    }
   }
 
   async update(id: string, updateJobDto: UpdateJobDto, user: IUser) {
