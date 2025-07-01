@@ -23,7 +23,7 @@ export class FilesController {
 
   @Post('upload')
   @UseInterceptors(FileInterceptor('key'))
-  @ResponseMessage('Upload file successfully')
+  @ResponseMessage('Upload single file successfully')
   uploadFile(
     @UploadedFile(
       //- sử dụng pipe để validate file upload
@@ -42,7 +42,9 @@ export class FilesController {
     )
     file: Express.Multer.File,
   ) {
-    console.log(file);
+    return {
+      fileName: file.filename,
+    };
   }
 
   @Get()

@@ -5,9 +5,11 @@ import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { TransformInterceptor } from './core/transform.interceptor';
 import cookieParser from 'cookie-parser';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const configService = app.get(ConfigService);
 
   //- use global JwtAuthGuard
@@ -45,6 +47,9 @@ async function bootstrap() {
     preflightContinue: false,
     credentials: true,
   });
+
+  //- cấu hình static để có thể đọc file tại folder public
+  app.useStaticAssets(join(__dirname, '..', 'public'));
 
   await app.listen(configService.get<string>('PORT') ?? 3000);
 }

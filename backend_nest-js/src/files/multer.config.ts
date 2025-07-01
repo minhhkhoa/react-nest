@@ -40,11 +40,13 @@ export class MulterConfigService implements MulterOptionsFactory {
   createMulterOptions(): MulterModuleOptions {
     return {
       storage: diskStorage({
+        //- cấu hình nơi lưu trữ file upload
         destination: (req, file, cb) => {
           const folder = req?.headers?.folder_type ?? 'default';
           this.ensureExists(`public/images/${folder}`);
           cb(null, join(this.getRootPath(), `public/images/${folder}`));
         },
+        //- đổi tên file upload kèm theo vị trí lưu trữ + thời gian upload
         filename: (req, file, cb) => {
           //get image extension
           let extName = path.extname(file.originalname);
