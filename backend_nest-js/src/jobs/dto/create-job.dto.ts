@@ -62,6 +62,9 @@ export class CreateJobDto {
   @IsNotEmpty({ message: 'Mô tả không được để trống' })
   description: string;
 
+  @IsNotEmpty({ message: 'Địa chỉ công việc không được để trống' })
+  location: string;
+
   @IsNotEmpty({ message: 'Start_Date không được để trống' })
   @Transform(({ value }) => new Date(value))
   @IsDate({ message: 'Start_Date không hợp lệ' })

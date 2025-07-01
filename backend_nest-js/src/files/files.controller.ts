@@ -12,7 +12,6 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { FilesService } from './files.service';
-import { CreateFileDto } from './dto/create-file.dto';
 import { UpdateFileDto } from './dto/update-file.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ResponseMessage } from 'src/decorator/customize';
@@ -22,7 +21,7 @@ export class FilesController {
   constructor(private readonly filesService: FilesService) {}
 
   @Post('upload')
-  @UseInterceptors(FileInterceptor('key'))
+  @UseInterceptors(FileInterceptor('fileUpload'))
   @ResponseMessage('Upload single file successfully')
   uploadFile(
     @UploadedFile(
@@ -30,7 +29,7 @@ export class FilesController {
       new ParseFilePipeBuilder()
         .addFileTypeValidator({
           fileType:
-            /^(image\/jpeg|image\/png|image\/gif|text\/plain|application\/pdf|application\/msword|audio\/mpeg|video\/mp4)$/i,
+            /^(jpg|png|jpeg|image\/jpeg|image\/png|image\/gif|text\/plain|application\/pdf|application\/msword|audio\/mpeg|video\/mp4)$/i,
         })
         .addMaxSizeValidator({
           maxSize: 1024 * 1024, //- 1MB
