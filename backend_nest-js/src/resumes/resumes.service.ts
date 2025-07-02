@@ -166,4 +166,24 @@ export class ResumesService {
       throw new BadRequestCustom(error.message, !!error.message);
     }
   }
+
+  async getHistoryJobByUserId(id: string) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new BadRequestCustom('Id User không hợp lệ!', !!id);
+    }
+    try {
+      const checkExist = await this.resumeModel.find({
+        userId: id,
+        isDeleted: false, //- không cần lắm vì nó tự loại ra đứa nào có isDeleted == true rồi
+      });
+
+      if (!checkExist) {
+        throw new BadRequestCustom('User này chưa có ứng tuyển nào!', !!id);
+      }
+
+      return checkExist;
+    } catch (error) {
+      throw new BadRequestCustom(error.message, !!error.message);
+    }
+  }
 }

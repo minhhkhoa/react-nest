@@ -58,4 +58,10 @@ export class ResumesController {
   remove(@Param('id') id: string, @userDecorator() user: IUser) {
     return this.resumesService.remove(id, user);
   }
+
+  @Post('by-user')
+  @ResponseMessage('Get Resumes by User')
+  getHistoryJob(@userDecorator() user: IUser) {
+    return this.resumesService.getHistoryJobByUserId(user._id);
+  }
 }
