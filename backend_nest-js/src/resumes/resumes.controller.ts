@@ -38,8 +38,9 @@ export class ResumesController {
   }
 
   @Get(':id')
+  @ResponseMessage('Fetch a resume by id')
   findOne(@Param('id') id: string) {
-    return this.resumesService.findOne(+id);
+    return this.resumesService.findOne(id);
   }
 
   @Patch(':id')

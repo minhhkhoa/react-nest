@@ -7,12 +7,14 @@ import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { Resume, ResumeDocument } from './schemas/resume.schema';
 import { use } from 'passport';
 import aqp from 'api-query-params';
+import { BadRequestCustom } from 'src/customExceptions/BadRequestCustom';
+import mongoose from 'mongoose';
 
 @Injectable()
 export class ResumesService {
   constructor(
     @InjectModel(Resume.name)
-    private resumeModel: SoftDeleteModel<ResumeDocument>, //- sử dụng SoftDeleteModel thông qua model JobDocument
+    private resumeModel: SoftDeleteModel<ResumeDocument>, //- sử dụng SoftDeleteModel thông qua model ResumeDocument
   ) {}
   async create(createUserCvDto: CreateUserCvDto, user: IUser) {
     try {
@@ -77,8 +79,21 @@ export class ResumesService {
     };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} resume`;
+  async findOne(id: string) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new BadRequestCustom('Id Resume không hợp lệ!', !!id);
+    }
+
+    try {
+      const checkResume = await this.resumeModel.findById(id);
+      if (!checkResume) {
+        throw new BadRequestCustom(`Không tìm thấy Resume với id ${id}`);
+      }
+
+      return checkResume;
+    } catch (error) {
+      throw new BadRequestCustom(error.message, !!error.message);
+    }
   }
 
   update(id: number, updateResumeDto: UpdateResumeDto) {
