@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { ResumesService } from './resumes.service';
 import { CreateResumeDto, CreateUserCvDto } from './dto/create-resume.dto';
@@ -27,8 +28,13 @@ export class ResumesController {
   }
 
   @Get()
-  findAll() {
-    return this.resumesService.findAll();
+  @ResponseMessage('Fetch all resumes with paginate')
+  findAll(
+    @Query('current') page: number,
+    @Query('pageSize') limit: number,
+    @Query() query: string,
+  ) {
+    return this.resumesService.findAll(page, limit, query);
   }
 
   @Get(':id')
