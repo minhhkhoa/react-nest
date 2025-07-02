@@ -136,7 +136,34 @@ export class ResumesService {
     }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} resume`;
+  async remove(id: string, user: IUser) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new BadRequestCustom('Id Resume không hợp lệ!', !!id);
+    }
+
+    try {
+      const checkResume = await this.resumeModel.findById(id);
+
+      if (!checkResume) {
+        throw new BadRequestCustom(`Không tìm thấy Resume với id ${id}`);
+      }
+
+      const filter = { _id: id };
+      const update = {
+        $set: {
+          deletedBy: {
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+          },
+        },
+      };
+      await this.resumeModel.updateOne(filter, update);
+
+      const result = await this.resumeModel.softDelete({ _id: id });
+      return result;
+    } catch (error) {
+      throw new BadRequestCustom(error.message, !!error.message);
+    }
   }
 }

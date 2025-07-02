@@ -118,9 +118,9 @@ export class JobsService {
     }
 
     try {
-      const checkUser = await this.jobModel.findById(id);
+      const checkJob = await this.jobModel.findById(id);
 
-      if (!checkUser) {
+      if (!checkJob) {
         throw new BadRequestCustom(`Không tìm thấy job với id ${id}`);
       }
 
