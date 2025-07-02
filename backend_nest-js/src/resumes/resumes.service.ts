@@ -96,8 +96,44 @@ export class ResumesService {
     }
   }
 
-  update(id: number, updateResumeDto: UpdateResumeDto) {
-    return `This action updates a #${id} resume`;
+  async update(id: string, updateResumeDto: UpdateResumeDto, user: IUser) {
+    const { status } = updateResumeDto;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new BadRequestCustom('Id Resume không hợp lệ!', !!id);
+    }
+    try {
+      const checkResume = await this.resumeModel.findById(id);
+      if (!checkResume) {
+        throw new BadRequestCustom(`Không tìm thấy Resume với id ${id}`);
+      }
+
+      const data = {
+        status,
+        updatedAt: new Date(),
+        updatedBy: {
+          _id: user._id,
+          email: user._id,
+          name: user.name,
+        },
+      };
+      const filter = { _id: id, isDeleted: false };
+      const update = {
+        $set: {
+          status,
+          updatedBy: {
+            _id: user._id,
+            email: user._id,
+            name: user.name,
+          },
+          history: [...checkResume.history, data],
+        },
+      };
+
+      const result = await this.resumeModel.updateOne(filter, update);
+      return result;
+    } catch (error) {
+      throw new BadRequestCustom(error.message, !!error.message);
+    }
   }
 
   remove(id: number) {
