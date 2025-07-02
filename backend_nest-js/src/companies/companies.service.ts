@@ -63,8 +63,21 @@ export class CompaniesService {
     };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} company`;
+  async findOne(id: string) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new BadRequestCustom('Id công ty không hợp lệ!', !!id);
+    }
+
+    try {
+      const checkCompany = await this.companyModel.findById(id);
+      if (!checkCompany) {
+        throw new BadRequestCustom(`Không tìm thấy công ty với id ${id}`);
+      }
+
+      return checkCompany;
+    } catch (error) {
+      throw new BadRequestCustom(error.message, !!error.message);
+    }
   }
 
   async update(id: string, updateCompanyDto: UpdateCompanyDto, user: IUser) {
