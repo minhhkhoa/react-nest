@@ -60,8 +60,6 @@ export class ResumesService {
     const totalItems = (await this.resumeModel.find(filter)).length;
     const totalPages = Math.ceil(totalItems / defaultLimit);
 
-    console.log('filter', filter);
-
     const result = await this.resumeModel
       .find(filter) //- nó tự động bỏ document có isDelete: true.
       .skip(offset)
