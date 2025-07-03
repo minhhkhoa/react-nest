@@ -49,7 +49,7 @@ export class ResumesService {
   }
 
   async findAll(currentPage: number, limit: number, query: string) {
-    const { filter, sort, population } = aqp(query);
+    const { filter, sort, population, projection } = aqp(query);
     delete filter.current;
     delete filter.pageSize;
 
@@ -60,12 +60,15 @@ export class ResumesService {
     const totalItems = (await this.resumeModel.find(filter)).length;
     const totalPages = Math.ceil(totalItems / defaultLimit);
 
+    console.log('filter', filter);
+
     const result = await this.resumeModel
       .find(filter) //- nó tự động bỏ document có isDelete: true.
       .skip(offset)
       .limit(defaultLimit)
       .sort(sort as any)
       .populate(population)
+      .select(projection as any)
       .exec();
 
     return {
