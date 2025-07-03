@@ -78,7 +78,12 @@ export class RolesService {
     }
 
     try {
-      const checkRole = await this.roleModel.findById(id);
+      const checkRole = await this.roleModel
+        .findById(id)
+        .populate({
+          path: 'permissions',
+          select: { _id: 1, name: 1, method: 1, apiPath: 1 },
+        });
       if (!checkRole) {
         throw new BadRequestCustom(`Không tìm thấy Role với id ${id}`);
       }
@@ -130,7 +135,34 @@ export class RolesService {
     }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} role`;
+  async remove(id: string, user: IUser) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new BadRequestCustom('Id Role không hợp lệ!', !!id);
+    }
+
+    try {
+      const checkRole = await this.roleModel.findById(id);
+
+      if (!checkRole) {
+        throw new BadRequestCustom(`Không tìm thấy Role với id ${id}`);
+      }
+
+      const filter = { _id: id };
+      const update = {
+        $set: {
+          deletedBy: {
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+          },
+        },
+      };
+      await this.roleModel.updateOne(filter, update);
+
+      const result = await this.roleModel.softDelete({ _id: id });
+      return result;
+    } catch (error) {
+      throw new BadRequestCustom(error.message, !!error.message);
+    }
   }
 }

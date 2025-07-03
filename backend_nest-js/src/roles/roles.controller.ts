@@ -51,7 +51,8 @@ export class RolesController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.rolesService.remove(+id);
+  @ResponseMessage('Delete a role')
+  remove(@Param('id') id: string, @userDecorator() user: IUser) {
+    return this.rolesService.remove(id, user);
   }
 }
