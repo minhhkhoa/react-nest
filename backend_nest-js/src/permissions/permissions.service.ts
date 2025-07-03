@@ -81,8 +81,21 @@ export class PermissionsService {
     };
   }
 
-  findOne(id: string) {
-    return `This action returns a #${id} permission`;
+  async findOne(id: string) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new BadRequestCustom('Id permission không hợp lệ!', !!id);
+    }
+
+    try {
+      const checkPermission = await this.permissionModel.findById(id);
+      if (!checkPermission) {
+        throw new BadRequestCustom(`Không tìm thấy permission với id ${id}`);
+      }
+
+      return checkPermission;
+    } catch (error) {
+      throw new BadRequestCustom(error.message, !!error.message);
+    }
   }
 
   async update(
@@ -132,7 +145,34 @@ export class PermissionsService {
     } catch (error) {}
   }
 
-  remove(id: string) {
-    return `This action removes a #${id} permission`;
+  async remove(id: string, user: IUser) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new BadRequestCustom('Id permission không hợp lệ!', !!id);
+    }
+
+    try {
+      const checkpermission = await this.permissionModel.findById(id);
+
+      if (!checkpermission) {
+        throw new BadRequestCustom(`Không tìm thấy permission với id ${id}`);
+      }
+
+      const filter = { _id: id };
+      const update = {
+        $set: {
+          deletedBy: {
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+          },
+        },
+      };
+      await this.permissionModel.updateOne(filter, update);
+
+      const result = await this.permissionModel.softDelete({ _id: id });
+      return result;
+    } catch (error) {
+      throw new BadRequestCustom(error.message, !!error.message);
+    }
   }
 }

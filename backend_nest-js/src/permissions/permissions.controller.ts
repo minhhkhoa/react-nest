@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Query,
+  Res,
 } from '@nestjs/common';
 import { PermissionsService } from './permissions.service';
 import { CreatePermissionDto } from './dto/create-permission.dto';
@@ -38,6 +39,7 @@ export class PermissionsController {
   }
 
   @Get(':id')
+  @ResponseMessage('Fetch a permission  by id')
   findOne(@Param('id') id: string) {
     return this.permissionsService.findOne(id);
   }
@@ -53,7 +55,8 @@ export class PermissionsController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.permissionsService.remove(id);
+  @ResponseMessage('Delete a permission')
+  remove(@Param('id') id: string, @userDecorator() user: IUser) {
+    return this.permissionsService.remove(id, user);
   }
 }
