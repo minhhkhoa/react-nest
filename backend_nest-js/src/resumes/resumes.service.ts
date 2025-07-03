@@ -173,10 +173,22 @@ export class ResumesService {
       throw new BadRequestCustom('Id User không hợp lệ!', !!id);
     }
     try {
-      const checkExist = await this.resumeModel.find({
-        userId: id,
-        isDeleted: false, //- không cần lắm vì nó tự loại ra đứa nào có isDeleted == true rồi
-      });
+      const checkExist = await this.resumeModel
+        .find({
+          userId: id,
+          isDeleted: false, //- không cần lắm vì nó tự loại ra đứa nào có isDeleted == true rồi
+        })
+        .sort('-createdAt') //- lấy những cái gần nhất
+        .populate([
+          {
+            path: 'companyId',
+            select: { name: 1 },
+          },
+          {
+            path: 'jobId',
+            select: { name: 1 },
+          },
+        ]);
 
       if (!checkExist) {
         throw new BadRequestCustom('User này chưa có ứng tuyển nào!', !!id);

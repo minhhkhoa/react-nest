@@ -89,7 +89,10 @@ export class UsersService {
     }
 
     try {
-      const user = await this.userModel.findById(id).select('-password');
+      const user = await this.userModel
+        .findById(id)
+        .select('-password')
+        .populate({ path: 'role', select: { name: 1, _id: 1 } });
       if (!user) {
         throw new BadRequestCustom('Không tìm thấy người dùng!', !!user);
       }
@@ -105,7 +108,9 @@ export class UsersService {
   }
 
   async checkEmailExist(email: string) {
-    return await this.userModel.findOne({ email });
+    return await this.userModel
+      .findOne({ email })
+      .populate({ path: 'role', select: { name: 1, permissions: 1 } });
   }
 
   async update(updateUserDto: UpdateUserDto, user: IUser) {
@@ -172,6 +177,14 @@ export class UsersService {
 
       if (!checkUser) {
         throw new BadRequestCustom('Không tìm thấy người dùng!');
+      }
+
+      //- ko cho xoa admin
+      if (checkUser.email === 'admin@gmail.com') {
+        throw new BadRequestCustom(
+          'Không được phép xóa người admin!',
+          !!checkUser,
+        );
       }
 
       const filter = { _id: id };

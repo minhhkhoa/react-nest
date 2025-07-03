@@ -78,12 +78,10 @@ export class RolesService {
     }
 
     try {
-      const checkRole = await this.roleModel
-        .findById(id)
-        .populate({
-          path: 'permissions',
-          select: { _id: 1, name: 1, method: 1, apiPath: 1 },
-        });
+      const checkRole = await this.roleModel.findById(id).populate({
+        path: 'permissions',
+        select: { _id: 1, name: 1, method: 1, apiPath: 1, module: 1 },
+      });
       if (!checkRole) {
         throw new BadRequestCustom(`Không tìm thấy Role với id ${id}`);
       }
@@ -105,16 +103,16 @@ export class RolesService {
         throw new BadRequestCustom(`Không tìm thấy role với id ${id}`, !!id);
       }
 
-      const existNameRole = await this.roleModel.findOne({
-        name: updateRoleDto.name,
-      });
+      // const existNameRole = await this.roleModel.findOne({
+      //   name: updateRoleDto.name,
+      // });
 
-      if (existNameRole) {
-        throw new BadRequestCustom(
-          `Vai trò ${updateRoleDto.name} đã tồn tại!`,
-          !!updateRoleDto.name,
-        );
-      }
+      // if (existNameRole) {
+      //   throw new BadRequestCustom(
+      //     `Vai trò ${updateRoleDto.name} đã tồn tại!`,
+      //     !!updateRoleDto.name,
+      //   );
+      // }
 
       const filter = { _id: id };
       const update = {
@@ -145,6 +143,11 @@ export class RolesService {
 
       if (!checkRole) {
         throw new BadRequestCustom(`Không tìm thấy Role với id ${id}`);
+      }
+
+      //- khong cho xoa admin
+      if (checkRole.name === 'ADMIN') {
+        throw new BadRequestCustom('Không được phép xóa Role admin!', !!checkRole);
       }
 
       const filter = { _id: id };

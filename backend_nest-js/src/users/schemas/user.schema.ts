@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
+import { Role } from 'src/roles/schemas/role.schema';
 
 export type UserDocument = HydratedDocument<User>; //- đây là một kiểu dữ liệu mới được tạo ra từ HydratedDocument<User> để đại diện cho một document của User
 
@@ -29,8 +30,8 @@ export class User {
     name: string;
   };
 
-  @Prop()
-  role: string;
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Role.name })
+  role: mongoose.Schema.Types.ObjectId;
 
   @Prop()
   refreshToken: string;

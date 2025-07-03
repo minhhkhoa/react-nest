@@ -11,7 +11,7 @@ import { BadRequestCustom } from 'src/customExceptions/BadRequestCustom';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { ConfigService } from '@nestjs/config';
-import { response, Response } from 'express';
+import { Response } from 'express';
 
 import ms from 'ms';
 
@@ -157,7 +157,7 @@ export class AuthService {
         _id,
         name,
         email,
-        role,
+        role: role.toString(),
       };
 
       const result = await this.login(payload, response);

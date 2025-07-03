@@ -2,6 +2,7 @@ import { Type } from 'class-transformer';
 import {
   IsEmail,
   IsInt,
+  IsMongoId,
   IsNotEmpty,
   IsNotEmptyObject,
   IsObject,
@@ -10,7 +11,8 @@ import {
 } from 'class-validator';
 import mongoose from 'mongoose';
 
-export class Company { //- mục đích để validate cho nested_obj company
+export class Company {
+  //- mục đích để validate cho nested_obj company
   @IsNotEmpty()
   _id: mongoose.Schema.Types.ObjectId;
   @IsNotEmpty()
@@ -40,6 +42,7 @@ export class CreateUserDto {
   address: string;
 
   @IsNotEmpty({ message: 'Quyền không được để trống' })
+  @IsMongoId({ message: 'Role định dạng là mongo id' })
   role: string;
 
   @IsNotEmptyObject()
