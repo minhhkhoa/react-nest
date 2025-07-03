@@ -72,8 +72,21 @@ export class RolesService {
     };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} role`;
+  async findOne(id: string) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new BadRequestCustom('Id Role không hợp lệ!', !!id);
+    }
+
+    try {
+      const checkRole = await this.roleModel.findById(id);
+      if (!checkRole) {
+        throw new BadRequestCustom(`Không tìm thấy Role với id ${id}`);
+      }
+
+      return checkRole;
+    } catch (error) {
+      throw new BadRequestCustom(error.message, !!error.message);
+    }
   }
 
   async update(id: string, updateRoleDto: UpdateRoleDto, user: IUser) {
