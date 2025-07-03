@@ -51,7 +51,7 @@ export class PermissionsService {
   }
 
   async findAll(currentPage: number, limit: number, query: string) {
-    const { filter, sort, population } = aqp(query);
+    const { filter, sort, population, projection } = aqp(query);
     delete filter.current;
     delete filter.pageSize;
 
@@ -68,6 +68,7 @@ export class PermissionsService {
       .limit(defaultLimit)
       .sort(sort as any)
       .populate(population)
+      .select(projection as any)
       .exec();
 
     return {
