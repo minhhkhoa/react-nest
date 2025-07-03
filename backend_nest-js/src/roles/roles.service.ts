@@ -7,6 +7,7 @@ import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { BadRequestCustom } from 'src/customExceptions/BadRequestCustom';
 import mongoose from 'mongoose';
+import aqp from 'api-query-params';
 
 @Injectable()
 export class RolesService {
@@ -40,8 +41,35 @@ export class RolesService {
     }
   }
 
-  findAll() {
-    return `This action returns all roles`;
+  async findAll(currentPage: number, limit: number, query: string) {
+    const { filter, sort, population } = aqp(query);
+    delete filter.current;
+    delete filter.pageSize;
+
+    const defaultPage = currentPage > 0 ? +currentPage : 1;
+    let offset = (+defaultPage - 1) * +limit;
+    let defaultLimit = +limit ? +limit : 10;
+
+    const totalItems = (await this.roleModel.find(filter)).length;
+    const totalPages = Math.ceil(totalItems / defaultLimit);
+
+    const result = await this.roleModel
+      .find(filter) //- nó tự động bỏ document có isDelete: true.
+      .skip(offset)
+      .limit(defaultLimit)
+      .sort(sort as any)
+      .populate(population)
+      .exec();
+
+    return {
+      meta: {
+        current: defaultPage,
+        pageSize: limit,
+        pages: totalPages,
+        total: totalItems,
+      },
+      result,
+    };
   }
 
   findOne(id: number) {
