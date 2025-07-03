@@ -157,7 +157,7 @@ export class AuthService {
         _id,
         name,
         email,
-        role: role.toString(),
+        role,
       };
 
       const result = await this.login(payload, response);
