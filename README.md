@@ -1,0 +1,3 @@
+- Dự án này chủ yếu là mình học cách sử dụng NestJs.
+- Ngoài crud các module ra thì có phần login mình làm khá chỉn chu với jwt.
+- Thêm phần phân quyền nữa cũng khá hay.
