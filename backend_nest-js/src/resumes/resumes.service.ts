@@ -49,6 +49,7 @@ export class ResumesService {
   }
 
   async findAll(currentPage: number, limit: number, query: string) {
+    //- projection: chọn field trả về (ví dụ { title: 1, content: 1 })
     const { filter, sort, population, projection } = aqp(query);
     delete filter.current;
     delete filter.pageSize;

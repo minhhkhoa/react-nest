@@ -12,7 +12,6 @@ import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
-
 import ms from 'ms';
 
 @Injectable()
