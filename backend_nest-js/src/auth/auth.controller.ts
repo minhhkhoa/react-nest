@@ -9,7 +9,6 @@ import {
 } from '@nestjs/common';
 import { LocalAuthGuard } from './local-auth.guard';
 import { AuthService } from './auth.service';
-import { JwtAuthGuard } from './jwt-auth.guard';
 import {
   Public,
   ResponseMessage,
@@ -18,10 +17,14 @@ import {
 import { RegisterUserDto } from 'src/users/dto/create-user.dto';
 import { Response } from 'express';
 import { IUser } from 'src/users/users.interface';
+import { RolesService } from 'src/roles/roles.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private roleService: RolesService,
+  ) {}
 
   //-route nay se de public khong can xac thuc access_token voi JwtAuthGuard
   @Public()
@@ -41,7 +44,10 @@ export class AuthController {
   }
 
   @Get('account')
-  getProfile(@userDecorator() user: IUser) {
+  async getProfile(@userDecorator() user: IUser) {
+    //- để any vì ở hàm findOne có trả về thêm trường permissions bằng populate, nhưng biến temp lại không biết có thêm permission vì bên logic của findOne đau có định nghĩa 
+    const temp = await this.roleService.findOne(user.role._id) as any;
+    user.permissions = temp.permissions;
     return { user };
   }
 

@@ -8,6 +8,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { BadRequestCustom } from 'src/customExceptions/BadRequestCustom';
 import mongoose from 'mongoose';
 import aqp from 'api-query-params';
+import { ADMIN_ROLE } from 'src/databases/sample';
 
 @Injectable()
 export class RolesService {
@@ -146,7 +147,7 @@ export class RolesService {
       }
 
       //- khong cho xoa admin
-      if (checkRole.name === 'ADMIN') {
+      if (checkRole.name === ADMIN_ROLE) {
         throw new BadRequestCustom('Không được phép xóa Role admin!', !!checkRole);
       }
 

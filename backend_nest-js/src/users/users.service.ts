@@ -110,7 +110,7 @@ export class UsersService {
   async checkEmailExist(email: string) {
     return await this.userModel
       .findOne({ email })
-      .populate({ path: 'role', select: { name: 1, permissions: 1 } });
+      .populate({ path: 'role', select: { name: 1 } });
   }
 
   async update(updateUserDto: UpdateUserDto, user: IUser) {

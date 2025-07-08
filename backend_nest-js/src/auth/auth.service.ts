@@ -13,14 +13,19 @@ import { InjectModel } from '@nestjs/mongoose';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 import ms from 'ms';
+import { Role, RoleDocument } from 'src/roles/schemas/role.schema';
+import { USER_ROLE } from 'src/databases/sample';
+import { RolesService } from 'src/roles/roles.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private configService: ConfigService,
     private usersService: UsersService,
+    private roleService: RolesService,
     private jwtService: JwtService,
     @InjectModel(User.name) private userModel: SoftDeleteModel<UserDocument>, //- tiêm vào để có thể tương tác vs csdl
+    @InjectModel(Role.name) private roleModel: SoftDeleteModel<RoleDocument>,
   ) {}
 
   //-email va pass la 2 tham so ma thu vien passport se truyen vao
@@ -34,15 +39,23 @@ export class AuthService {
       );
       if (isValid) {
         //-mat khau dung
-        return user;
+        const userRole = user.role as unknown as { _id: string; name: string };
+        const temp = (await this.roleService.findOne(userRole._id));
+
+        const objUser =  {
+          ...user.toObject(),
+          permissions: temp?.permissions ?? [],
+        };
+
+        return objUser;
       }
     }
     return null;
   }
 
   //-bất kỳ object nào có những 4 trường (_id,name,email,role) đều đủ điều kiện để được coi là IUser
-  async login(user: IUser, response: Response) {
-    const { _id, name, email, role } = user;
+  async login(user: any, response: Response) {
+    const { _id, name, email, role, permissions } = user;
     const payload = {
       sub: 'token login',
       iss: 'from server',
@@ -75,6 +88,7 @@ export class AuthService {
         name,
         email,
         role,
+        permissions,
       },
     };
   }
@@ -90,13 +104,22 @@ export class AuthService {
       );
     }
 
+    const userRole = await this.roleModel.findOne({ name: USER_ROLE });
+    if (!userRole) {
+      throw new BadRequestCustom('Không tìm thấy role người dùng!', !!userRole);
+    }
+
+    registerUserDto.role = userRole._id;
+
     const hashPassword: string = this.usersService.getHashPassword(
       registerUserDto.password,
     );
     registerUserDto.password = hashPassword;
 
-    registerUserDto.role = 'USER';
-    const user = await this.userModel.create(registerUserDto);
+    const user = await this.userModel.create({
+      ...registerUserDto,
+      role: userRole._id,
+    });
     return {
       _id: user._id,
       createdAt: user.createdAt,
@@ -150,6 +173,9 @@ export class AuthService {
       const _id = user.id; //- cú phúp này lây ra id cơ sở dữ liệu (vì _id của mongoose là Object_id)
       const { email, name, role } = user;
 
+      const userRole = user.role as unknown as { _id: string; name: string };
+      const temp = await this.roleService.findOne(userRole._id);
+
       const payload = {
         sub: 'token login',
         iss: 'from server',
@@ -157,6 +183,7 @@ export class AuthService {
         name,
         email,
         role,
+        permissions: temp?.permissions ?? [],
       };
 
       const result = await this.login(payload, response);

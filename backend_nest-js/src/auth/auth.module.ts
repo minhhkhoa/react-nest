@@ -10,6 +10,8 @@ import ms from 'ms';
 import { AuthController } from './auth.controller';
 import { User, UserSchema } from 'src/users/schemas/user.schema';
 import { MongooseModule } from '@nestjs/mongoose';
+import { Role, RoleSchema } from 'src/roles/schemas/role.schema';
+import { RolesService } from 'src/roles/roles.service';
 
 @Module({
   controllers: [AuthController],
@@ -23,18 +25,22 @@ import { MongooseModule } from '@nestjs/mongoose';
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_ACCESS_TOKEN_SECRET'),
         signOptions: {
-          expiresIn: ms(
-            (configService.get<string>('JWT_ACCESS_EXPIRE') ??
-              '1d') as ms.StringValue, //-ép kiểu về ms.StringValue vì ms nó nhận ms.StringValue click vào ms để xem
-          ) / 1000,
+          expiresIn:
+            ms(
+              (configService.get<string>('JWT_ACCESS_EXPIRE') ??
+                '1d') as ms.StringValue, //-ép kiểu về ms.StringValue vì ms nó nhận ms.StringValue click vào ms để xem
+            ) / 1000,
         },
       }),
       inject: [ConfigService],
     }),
 
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }])
+    MongooseModule.forFeature([
+      { name: User.name, schema: UserSchema },
+      { name: Role.name, schema: RoleSchema },
+    ]),
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy, RolesService],
   exports: [AuthService],
 })
 export class AuthModule {}
