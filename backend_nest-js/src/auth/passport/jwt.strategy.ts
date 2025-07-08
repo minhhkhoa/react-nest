@@ -3,10 +3,14 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { IUser } from 'src/users/users.interface';
+import { RolesService } from 'src/roles/roles.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private readonly configService: ConfigService) {
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly roleService: RolesService,
+  ) {
     //- giải mã jwt token
     //- sử dụng ExtractJwt để lấy token từ header
     super({
@@ -20,11 +24,17 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(payload: IUser) {
     //- nói cách khác payload nó là data mà bên sign(payload) sử dụng
     const { _id, name, email, role } = payload;
+
+    //- gan them permission cho req.user
+    const userRole = role as unknown as { _id: string; name: string };
+    const temp = (await this.roleService.findOne(userRole._id)).toObject();
+
     return {
       _id,
       name,
       email,
       role,
+      permissions: temp?.permissions ?? [],
     }; //- nó sẽ gán vào req.user đấy
   }
 }
