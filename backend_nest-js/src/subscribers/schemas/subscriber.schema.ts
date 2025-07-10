@@ -5,15 +5,14 @@ export type SubscriberDocument = HydratedDocument<Subscriber>;
 
 @Schema({ timestamps: true })
 export class Subscriber {
+  @Prop({ required: true })
+  email: string;
+
   @Prop()
   name: string;
 
   @Prop()
-  email: string;
-
-  @Prop()
   skills: string[];
-
 
   @Prop()
   createdAt?: Date;
