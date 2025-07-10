@@ -146,6 +146,11 @@ export class RolesService {
         throw new BadRequestCustom(`Không tìm thấy Role với id ${id}`);
       }
 
+      const isDelete = checkRole.isDeleted;
+      if (isDelete) {
+        throw new BadRequestCustom('Role này đã được xóa', !!isDelete);
+      }
+
       //- khong cho xoa admin
       if (checkRole.name === ADMIN_ROLE) {
         throw new BadRequestCustom('Không được phép xóa Role admin!', !!checkRole);

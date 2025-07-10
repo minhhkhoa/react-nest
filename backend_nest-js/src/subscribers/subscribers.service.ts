@@ -138,12 +138,17 @@ export class SubscribersService {
     }
 
     try {
-      const checkRole = await this.subscriberModel.findById(id);
+      const checkSubscriber = await this.subscriberModel.findById(id);
 
-      if (!checkRole) {
+      if (!checkSubscriber) {
         throw new BadRequestCustom(`Không tìm thấy subscriber với id ${id}`);
       }
 
+      const isDelete = checkSubscriber.isDeleted;
+      if (isDelete) {
+        throw new BadRequestCustom('Subscriber này đã được xóa', !!isDelete);
+      }
+        
       const filter = { _id: id };
       const update = {
         $set: {

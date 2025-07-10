@@ -124,6 +124,11 @@ export class JobsService {
         throw new BadRequestCustom(`Không tìm thấy job với id ${id}`);
       }
 
+      const isDelete = checkJob.isDeleted;
+      if (isDelete) {
+        throw new BadRequestCustom('Job này đã được xóa', !!isDelete);
+      }
+
       const filter = { _id: id };
       const update = {
         $set: {

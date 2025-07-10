@@ -158,6 +158,11 @@ export class PermissionsService {
         throw new BadRequestCustom(`Không tìm thấy permission với id ${id}`);
       }
 
+      const isDelete = checkpermission.isDeleted;
+      if (isDelete) {
+        throw new BadRequestCustom('Permission này đã được xóa', !!isDelete);
+      }
+
       const filter = { _id: id };
       const update = {
         $set: {

@@ -125,6 +125,11 @@ export class CompaniesService {
         throw new BadRequestCustom(`Công ty có id: ${id} không tồn tại!`, !!id);
       }
 
+      const isDelete = document.isDeleted;
+      if (isDelete) {
+        throw new BadRequestCustom('Công ty này đã được xóa', !!isDelete);
+      }
+
       await this.companyModel.updateOne(
         { _id: id },
         {

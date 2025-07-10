@@ -179,6 +179,11 @@ export class UsersService {
         throw new BadRequestCustom('Không tìm thấy người dùng!');
       }
 
+      const isDelete = checkUser.isDeleted;
+      if (isDelete) {
+        throw new BadRequestCustom('Người dùng này đã được xóa', !!isDelete);
+      }
+
       //- ko cho xoa admin
       if (checkUser.email === 'admin@gmail.com') {
         throw new BadRequestCustom(

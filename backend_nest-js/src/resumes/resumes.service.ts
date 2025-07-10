@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { CreateResumeDto, CreateUserCvDto } from './dto/create-resume.dto';
+import { CreateUserCvDto } from './dto/create-resume.dto';
 import { UpdateResumeDto } from './dto/update-resume.dto';
 import { IUser } from 'src/users/users.interface';
 import { InjectModel } from '@nestjs/mongoose';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { Resume, ResumeDocument } from './schemas/resume.schema';
-import { use } from 'passport';
 import aqp from 'api-query-params';
 import { BadRequestCustom } from 'src/customExceptions/BadRequestCustom';
 import mongoose from 'mongoose';
@@ -148,6 +147,11 @@ export class ResumesService {
 
       if (!checkResume) {
         throw new BadRequestCustom(`Không tìm thấy Resume với id ${id}`);
+      }
+
+      const isDelete = checkResume.isDeleted;
+      if (isDelete) {
+        throw new BadRequestCustom('Resume này đã được xóa', !!isDelete);
       }
 
       const filter = { _id: id };

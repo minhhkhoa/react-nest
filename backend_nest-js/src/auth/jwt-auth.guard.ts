@@ -37,13 +37,17 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
     //- check permission phia back_end
     const targetMethod = request.method;
-    const targetEnpoint = request.route?.path;
+    const targetEnpoint = request.route?.path as string;
 
     const permission = user?.permissions ?? [];
-    const isExist = permission.find(
+    let isExist = permission.find(
       (item: Permission) =>
         item.apiPath === targetEnpoint && item.method === targetMethod,
     );
+
+    //- public enpoind nay khong can check permission
+    if(targetEnpoint.startsWith('/api/v1/auth')) isExist = true
+
     if (!isExist) {
       throw new ForbiddenException('Bạn không có quyền truy cập');
     }
