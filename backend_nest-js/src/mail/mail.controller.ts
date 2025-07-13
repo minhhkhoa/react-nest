@@ -19,7 +19,7 @@ export class MailController {
       to: 'khoalon89@gmail.com',
       from: '"Support Team" <support@example.com>',
       subject: 'Welcome to Nice App! Confirm your Email',
-      html: '<b>welcome bla bla</b>',
+      template: 'job', //- ten file template
     });
   }
 }
