@@ -1,4 +1,9 @@
-import { createParamDecorator, ExecutionContext, SetMetadata } from '@nestjs/common';
+import {
+  createParamDecorator,
+  ExecutionContext,
+  SetMetadata,
+} from '@nestjs/common';
+import { set } from 'mongoose';
 
 export const IS_PUBLIC_KEY = 'isPublic';
 export const Public = () => SetMetadata(IS_PUBLIC_KEY, true); //- key:value
@@ -14,3 +19,6 @@ export const userDecorator = createParamDecorator(
   },
 );
 
+export const IS_PUBLIC_PERMISSION = 'isPublicPermission';
+export const skipCheckPermission = () =>
+  SetMetadata(IS_PUBLIC_PERMISSION, true);

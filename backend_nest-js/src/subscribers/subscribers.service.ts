@@ -89,32 +89,19 @@ export class SubscribersService {
     }
   }
 
-  async update(
-    id: string,
-    updateSubscriberDto: UpdateSubscriberDto,
-    user: IUser,
-  ) {
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      throw new BadRequestCustom('ID không hợp lệ!', !!id);
-    }
-
+  async update(updateSubscriberDto: UpdateSubscriberDto, user: IUser) {
     try {
-      const checkExistDocument = await this.subscriberModel.findById(id);
+      const checkExistDocument = await this.subscriberModel.find({
+        email: user.email,
+      });
       if (!checkExistDocument) {
         throw new BadRequestCustom(
-          `Không tìm thấy subscriber với id ${id}`,
-          !!id,
+          `Không tìm thấy subscriber với email ${user.email}`,
+          !!user.email,
         );
       }
 
-      const isExistEmail = await this.subscriberModel.findOne({
-        email: updateSubscriberDto?.email,
-      });
-      if (isExistEmail) {
-        throw new BadRequestCustom('Email đăng ký nhận thông báo đã tồn tại');
-      }
-
-      const filter = { _id: id };
+      const filter = { email: user.email };
       const update = {
         $set: {
           ...updateSubscriberDto,
@@ -126,7 +113,9 @@ export class SubscribersService {
         },
       };
 
-      const result = await this.subscriberModel.updateOne(filter, update);
+      const result = await this.subscriberModel.updateOne(filter, update, {
+        upsert: true,
+      });
       return result;
     } catch (error) {
       throw new BadRequestCustom(error.message, !!error.message);
@@ -148,7 +137,7 @@ export class SubscribersService {
       if (isDelete) {
         throw new BadRequestCustom('Subscriber này đã được xóa', !!isDelete);
       }
-        
+
       const filter = { _id: id };
       const update = {
         $set: {
@@ -162,6 +151,17 @@ export class SubscribersService {
       await this.subscriberModel.updateOne(filter, update);
 
       const result = await this.subscriberModel.softDelete({ _id: id });
+      return result;
+    } catch (error) {
+      throw new BadRequestCustom(error.message, !!error.message);
+    }
+  }
+
+  async getUserSkills(user: IUser) {
+    try {
+      const result = await this.subscriberModel
+        .findOne({ email: user.email })
+        .select('skills');
       return result;
     } catch (error) {
       throw new BadRequestCustom(error.message, !!error.message);
