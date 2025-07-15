@@ -29,14 +29,14 @@ export class JobsController {
   }
 
   @Get()
-  @Public()
   @ResponseMessage('Fetch jobs with paginate')
   findAll(
     @Query('current') page: number,
     @Query('pageSize') limit: number,
     @Query() query: string,
+    @userDecorator() user: IUser,
   ) {
-    return this.jobsService.findAll(page, limit, query);
+    return this.jobsService.findAll(page, limit, query, user);
   }
 
   @Get(':id')

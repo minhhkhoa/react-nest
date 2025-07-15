@@ -1,5 +1,3 @@
-import { ObjectId } from "mongoose";
-
 export interface IUser {
   _id: string;
   name: string;
@@ -15,4 +13,9 @@ export interface IUser {
     method: string;
     module: string;
   }[];
+
+  company?: {
+    _id: string;
+    name: string;
+  };
 }

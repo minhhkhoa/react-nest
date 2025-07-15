@@ -55,7 +55,7 @@ export class AuthService {
 
   //-bất kỳ object nào có những 4 trường (_id,name,email,role) đều đủ điều kiện để được coi là IUser
   async login(user: any, response: Response) {
-    const { _id, name, email, role, permissions } = user;
+    const { _id, name, email, role, permissions, company } = user;
     const payload = {
       sub: 'token login',
       iss: 'from server',
@@ -63,6 +63,7 @@ export class AuthService {
       name,
       email,
       role,
+      company,
     };
 
     const refreshToken = this.createRefreshToken(payload);
@@ -89,6 +90,7 @@ export class AuthService {
         email,
         role,
         permissions,
+        company
       },
     };
   }
@@ -184,6 +186,7 @@ export class AuthService {
         email,
         role,
         permissions: temp?.permissions ?? [],
+        company: user.company ?? []
       };
 
       const result = await this.login(payload, response);

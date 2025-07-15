@@ -33,8 +33,9 @@ export class ResumesController {
     @Query('current') page: number,
     @Query('pageSize') limit: number,
     @Query() query: string,
+    @userDecorator() user: IUser,
   ) {
-    return this.resumesService.findAll(page, limit, query);
+    return this.resumesService.findAll(page, limit, query, user);
   }
 
   @Get(':id')

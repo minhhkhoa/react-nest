@@ -47,11 +47,20 @@ export class ResumesService {
     } catch (error) {}
   }
 
-  async findAll(currentPage: number, limit: number, query: string) {
+  async findAll(
+    currentPage: number,
+    limit: number,
+    query: string,
+    user: IUser,
+  ) {
     //- projection: chọn field trả về (ví dụ { title: 1, content: 1 })
     const { filter, sort, population, projection } = aqp(query);
     delete filter.current;
     delete filter.pageSize;
+
+    if (user?.company?._id) {
+      filter.companyId = user?.company?._id;
+    }
 
     const defaultPage = currentPage > 0 ? +currentPage : 1;
     let offset = (+defaultPage - 1) * +limit;

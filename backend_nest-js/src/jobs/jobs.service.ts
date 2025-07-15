@@ -34,10 +34,19 @@ export class JobsService {
     }
   }
 
-  async findAll(currentPage: number, limit: number, query: string) {
+  async findAll(
+    currentPage: number,
+    limit: number,
+    query: string,
+    user: IUser,
+  ) {
     const { filter, sort, population } = aqp(query);
     delete filter.current;
     delete filter.pageSize;
+
+    if (user?.company?._id) {
+      filter['company._id'] = user.company._id;
+    }
 
     const defaultPage = currentPage > 0 ? +currentPage : 1;
     let offset = (+defaultPage - 1) * +limit;

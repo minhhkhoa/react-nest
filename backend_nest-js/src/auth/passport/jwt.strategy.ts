@@ -35,6 +35,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       email,
       role,
       permissions: temp?.permissions ?? [],
+      company: payload.company ?? []
     }; //- nó sẽ gán vào req.user đấy
   }
 }
