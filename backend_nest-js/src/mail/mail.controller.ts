@@ -22,14 +22,10 @@ export class MailController {
     @InjectModel(Job.name) private jobModel: SoftDeleteModel<JobDocument>,
   ) {}
 
-  @Cron(CronExpression.EVERY_5_SECONDS)
-  testCron() {
-    console.log(">>> call me")
-  }
-
   @Get()
   @Public()
   @ResponseMessage('Test email')
+  @Cron("0 5 0 * * 0") //- run at 5:00 AM every Sunday
   async handleTestEmail() {
     const subscribers = await this.subscriberModel.find({});
     for (const subs of subscribers) {
