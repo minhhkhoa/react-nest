@@ -21,13 +21,13 @@ async function bootstrap() {
   //- use global pipe
   app.useGlobalPipes(
     new ValidationPipe({
+      whitelist: true, //- loại bỏ các field khong khai bao trong DTO tức là làm sạch dữ liệu trước khi vào controller đó
       transform: true, // ép kiểu theo DTO
       transformOptions: {
         enableImplicitConversion: true, // tự động convert string -> number, v.v.
       },
     }),
   ); //- sử dụng pipe để validate dữ liệu trước khi vào controller
-
 
   //- start config versioning
   app.setGlobalPrefix('api');
