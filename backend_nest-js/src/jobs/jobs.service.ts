@@ -8,6 +8,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { BadRequestCustom } from 'src/customExceptions/BadRequestCustom';
 import mongoose from 'mongoose';
 import aqp from 'api-query-params';
+import { listNameImages } from './imagesJob';
 
 @Injectable()
 export class JobsService {
@@ -16,6 +17,9 @@ export class JobsService {
   ) {}
   async create(createJobDto: CreateJobDto, user: IUser) {
     try {
+      const logo =
+        listNameImages[Math.floor(Math.random() * listNameImages.length)];
+      createJobDto.company.logo = logo;
       const newJob = await this.jobModel.create({
         ...createJobDto,
         createdBy: {

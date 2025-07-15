@@ -29,7 +29,6 @@ export class CompaniesController {
   }
 
   @Get()
-  @Public()
   @ResponseMessage('Get list companies with paginate')
   findAll(
     //- vì trong main mình có config pipe global nên nó chạy trước cả pipe custom mình viết dưới này. Nếu để type tham số là string thì nó sẽ không chạy pipe global. Còn nếu để number thì nó sẽ chạy pipe global trước khi chạy pipe custom, đó là cách chạy của NestJS.

@@ -40,9 +40,9 @@ export class AuthService {
       if (isValid) {
         //-mat khau dung
         const userRole = user.role as unknown as { _id: string; name: string };
-        const temp = (await this.roleService.findOne(userRole._id));
+        const temp = await this.roleService.findOne(userRole._id);
 
-        const objUser =  {
+        const objUser = {
           ...user.toObject(),
           permissions: temp?.permissions ?? [],
         };
@@ -90,7 +90,7 @@ export class AuthService {
         email,
         role,
         permissions,
-        company
+        company,
       },
     };
   }
@@ -186,7 +186,7 @@ export class AuthService {
         email,
         role,
         permissions: temp?.permissions ?? [],
-        company: user.company ?? []
+        company: user.company ?? [],
       };
 
       const result = await this.login(payload, response);
