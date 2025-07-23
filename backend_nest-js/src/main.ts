@@ -76,7 +76,7 @@ async function bootstrap() {
     //-add bearer auth
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, documentFactory, {
+  SwaggerModule.setup('swagger', app, documentFactory, {
     swaggerOptions: {
       persistAuthorization: true, //- ghi nho token khi refresh
     },
