@@ -127,7 +127,7 @@ const ApplyModal = (props: IProps) => {
                                         >
 
                                             <Upload {...propsUpload}>
-                                                <Button icon={<UploadOutlined />}>Tải lên CV của bạn ( Hỗ trợ *.doc, *.docx, *.pdf, and &lt; 5MB )</Button>
+                                                <Button icon={<UploadOutlined />}>Tải lên CV của bạn ( Hỗ trợ *.doc, *.docx, *.pdf, and &lt; 2MB )</Button>
                                             </Upload>
                                         </ProForm.Item>
                                     </Col>

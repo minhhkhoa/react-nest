@@ -10,12 +10,14 @@ import {
   UploadedFile,
   ParseFilePipeBuilder,
   HttpStatus,
+  UseFilters,
 } from '@nestjs/common';
 import { FilesService } from './files.service';
 import { UpdateFileDto } from './dto/update-file.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ResponseMessage } from 'src/decorator/customize';
 import { ApiTags } from '@nestjs/swagger';
+import { HttpExceptionFilter } from 'src/core/http-exception.filter';
 
 @ApiTags('files')
 @Controller('files')
@@ -25,24 +27,8 @@ export class FilesController {
   @Post('upload')
   @UseInterceptors(FileInterceptor('fileUpload'))
   @ResponseMessage('Upload single file successfully')
-  uploadFile(
-    @UploadedFile(
-      //- sử dụng pipe để validate file upload
-      new ParseFilePipeBuilder()
-        .addFileTypeValidator({
-          fileType:
-            /^(jpg|png|jpeg|image\/jpeg|image\/png|image\/gif|text\/plain|application\/pdf|application\/msword|audio\/mpeg|video\/mp4)$/i,
-        })
-        .addMaxSizeValidator({
-          maxSize: 1024 * 1024, //- 1MB
-          message: 'File size is too large',
-        })
-        .build({
-          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-        }),
-    )
-    file: Express.Multer.File,
-  ) {
+  @UseFilters(new HttpExceptionFilter())
+  uploadFile(@UploadedFile() file: Express.Multer.File) {
     return {
       fileName: file.filename,
     };
