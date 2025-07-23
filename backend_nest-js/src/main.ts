@@ -7,6 +7,7 @@ import { TransformInterceptor } from './core/transform.interceptor';
 import cookieParser from 'cookie-parser';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
+import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -50,6 +51,10 @@ async function bootstrap() {
 
   //- cấu hình static để có thể đọc file tại folder public
   app.useStaticAssets(join(__dirname, '..', 'public'));
+
+  //- config helmet
+  app.use(helmet());
+  //- end config helmet
 
   await app.listen(configService.get<string>('PORT') ?? 3000);
 }
