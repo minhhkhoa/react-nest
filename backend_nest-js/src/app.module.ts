@@ -17,11 +17,18 @@ import { DatabasesModule } from './databases/databases.module';
 import { SubscribersModule } from './subscribers/subscribers.module';
 import { MailModule } from './mail/mail.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
     //- cron job
     ScheduleModule.forRoot(),
+
+    //- rate limit
+    ThrottlerModule.forRoot({ //- trong thoi gian 1 phut, chi cho phep 3 request
+      ttl: 60,
+      limit: 3,
+    }),
 
     MongooseModule.forRootAsync({
       imports: [ConfigModule],

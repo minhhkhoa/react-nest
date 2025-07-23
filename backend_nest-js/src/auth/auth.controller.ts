@@ -18,6 +18,7 @@ import { RegisterUserDto } from 'src/users/dto/create-user.dto';
 import { Response } from 'express';
 import { IUser } from 'src/users/users.interface';
 import { RolesService } from 'src/roles/roles.service';
+import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 
 @Controller('auth')
 export class AuthController {
@@ -29,6 +30,8 @@ export class AuthController {
   //-route nay se de public khong can xac thuc access_token voi JwtAuthGuard
   @Public()
   @UseGuards(LocalAuthGuard)
+  @UseGuards(ThrottlerGuard)
+  // @Throttle(5, 60) //- co the ghi de nhu nay
   @Post('/login')
   @ResponseMessage('User login')
   handleLogin(@Req() req: any, @Res({ passthrough: true }) response: Response) {
