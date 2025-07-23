@@ -113,22 +113,22 @@ export class UsersService {
       .populate({ path: 'role', select: { name: 1 } });
   }
 
-  async update(updateUserDto: UpdateUserDto, user: IUser) {
-    if (!mongoose.Types.ObjectId.isValid(updateUserDto._id)) {
+  async update(updateUserDto: UpdateUserDto, user: IUser, id: string) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
       throw new BadRequestCustom(
         'Id người dùng không hợp lệ!',
-        !!updateUserDto._id,
+        !!id,
       );
     }
     try {
-      const checkUser = await this.userModel.findById(updateUserDto._id);
+      const checkUser = await this.userModel.findById(id);
       if (!checkUser) {
         throw new BadRequestCustom('Không tìm thấy người dùng!');
       }
 
       const filterEmail = {
         email: updateUserDto.email,
-        _id: { $ne: updateUserDto._id }, //- trừ đứa đang cần update ra(ne--->not equal)
+        _id: { $ne: id }, //- trừ đứa đang cần update ra(ne--->not equal)
       };
       const checkEmail = await this.userModel.findOne(filterEmail);
       if (checkEmail) {
@@ -147,7 +147,7 @@ export class UsersService {
             email: user.email,
           };
 
-      const filter = { _id: updateUserDto._id, isDeleted: false };
+      const filter = { _id: id, isDeleted: false };
       const update = {
         $set: {
           ...updateUserDto,

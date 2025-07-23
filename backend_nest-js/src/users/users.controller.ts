@@ -44,11 +44,14 @@ export class UsersController {
     return this.usersService.findUser(id);
   }
 
-  //- cho hết vào body kể cả id
-  @Patch()
+  @Patch(':id')
   @ResponseMessage('Update a User')
-  update(@Body() updateUserDto: UpdateUserDto, @userDecorator() user: IUser) {
-    return this.usersService.update(updateUserDto, user);
+  update(
+    @Body() updateUserDto: UpdateUserDto,
+    @userDecorator() user: IUser,
+    @Param('id') id: string,
+  ) {
+    return this.usersService.update(updateUserDto, user, id);
   }
 
   @Delete('/:id')
