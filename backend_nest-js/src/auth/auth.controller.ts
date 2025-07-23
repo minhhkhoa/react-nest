@@ -14,12 +14,14 @@ import {
   ResponseMessage,
   userDecorator,
 } from 'src/decorator/customize';
-import { RegisterUserDto } from 'src/users/dto/create-user.dto';
+import { RegisterUserDto, UserLoginDto } from 'src/users/dto/create-user.dto';
 import { Response } from 'express';
 import { IUser } from 'src/users/users.interface';
 import { RolesService } from 'src/roles/roles.service';
-import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
+import { ThrottlerGuard } from '@nestjs/throttler';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -29,6 +31,7 @@ export class AuthController {
 
   //-route nay se de public khong can xac thuc access_token voi JwtAuthGuard
   @Public()
+  @ApiBody({ type: UserLoginDto }) //- vi dang login voi jwt thi phai khai bao type cho body
   @UseGuards(LocalAuthGuard)
   @UseGuards(ThrottlerGuard)
   // @Throttle(5, 60) //- co the ghi de nhu nay
@@ -48,8 +51,8 @@ export class AuthController {
 
   @Get('account')
   async getProfile(@userDecorator() user: IUser) {
-    //- để any vì ở hàm findOne có trả về thêm trường permissions bằng populate, nhưng biến temp lại không biết có thêm permission vì bên logic của findOne đau có định nghĩa 
-    const temp = await this.roleService.findOne(user.role._id) as any;
+    //- để any vì ở hàm findOne có trả về thêm trường permissions bằng populate, nhưng biến temp lại không biết có thêm permission vì bên logic của findOne đau có định nghĩa
+    const temp = (await this.roleService.findOne(user.role._id)) as any;
     user.permissions = temp.permissions;
     return { user };
   }

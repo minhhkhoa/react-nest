@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsEmail,
@@ -6,6 +7,7 @@ import {
   IsNotEmpty,
   IsNotEmptyObject,
   IsObject,
+  IsString,
   Min,
   ValidateNested,
 } from 'class-validator';
@@ -15,6 +17,7 @@ export class Company {
   //- mục đích để validate cho nested_obj company
   @IsNotEmpty()
   _id: mongoose.Schema.Types.ObjectId;
+  
   @IsNotEmpty()
   name: string;
 
@@ -77,3 +80,19 @@ export class RegisterUserDto {
   @IsNotEmpty({ message: 'Địa chỉ không được để trống' })
   address: string;
 }
+
+export class UserLoginDto {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({ example: 'khoa@gmail.com', description: 'userName' })
+  readonly username: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: '123456',
+    description: 'password',
+  })
+  readonly password: string;
+}
+
