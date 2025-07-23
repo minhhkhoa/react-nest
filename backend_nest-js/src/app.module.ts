@@ -26,9 +26,13 @@ import { HealthModule } from './health/health.module';
     ScheduleModule.forRoot(),
 
     //- rate limit
-    ThrottlerModule.forRoot({ //- trong thoi gian 1 phut, chi cho phep 3 request
-      ttl: 60,
-      limit: 3,
+    ThrottlerModule.forRoot({
+      throttlers: [
+        {
+          ttl: 60000,
+          limit: 3,
+        },
+      ],
     }),
 
     MongooseModule.forRootAsync({
