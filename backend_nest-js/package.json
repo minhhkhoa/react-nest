@@ -38,6 +38,7 @@
     "bcryptjs": "^3.0.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
+    "cloudinary": "^2.7.0",
     "cookie-parser": "^1.4.7",
     "cron": "4.3.2",
     "handlebars": "4.7.8",
@@ -50,7 +51,8 @@
     "passport-local": "^1.0.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
-    "soft-delete-plugin-mongoose": "^1.0.17"
+    "soft-delete-plugin-mongoose": "^1.0.17",
+    "streamifier": "^0.1.1"
   },
   "devDependencies": {
     "@compodoc/compodoc": "^1.1.26",
@@ -69,6 +71,7 @@
     "@types/node": "^24.1.0",
     "@types/nodemailer": "^6.4.17",
     "@types/passport-jwt": "^4.0.1",
+    "@types/streamifier": "^0.1.2",
     "@types/supertest": "^6.0.3",
     "eslint": "^9.31.0",
     "eslint-config-prettier": "^10.1.8",

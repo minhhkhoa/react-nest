@@ -19,6 +19,7 @@ import { MailModule } from './mail/mail.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { HealthModule } from './health/health.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 
 @Module({
   imports: [
@@ -63,6 +64,7 @@ import { HealthModule } from './health/health.module';
     SubscribersModule,
     MailModule,
     HealthModule,
+    CloudinaryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
