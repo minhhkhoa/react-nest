@@ -79,6 +79,7 @@ const CompanyCard = (props: IProps) => {
                         </Col>
 
                         {displayCompany?.map(item => {
+                          console.log("item: ", item)
                             return (
                                 <Col span={24} md={6} key={item._id}>
                                     <Card
@@ -89,7 +90,7 @@ const CompanyCard = (props: IProps) => {
                                             <div className={styles["card-customize"]} >
                                                 <img
                                                     alt="example"
-                                                    src={`${import.meta.env.VITE_BACKEND_URL}/images/company/${item?.logo}`}
+                                                    src={item.logo}
                                                 />
                                             </div>
                                         }

@@ -41,6 +41,21 @@ export const callUploadSingleFile = (file: any, folderType: string) => {
         },
     });
 }
+/**
+ * Upload single file cloudinary
+ */
+export const callUploadSingleFileToCloudinary = (file: any) => {
+    const bodyFormData = new FormData();
+    bodyFormData.append('fileUpload', file);
+    return axios<IBackendRes<string>>({
+      method: "post",
+      url: "/api/v1/cloudinary/upload",
+      data: bodyFormData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+}
 
 
 
