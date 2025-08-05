@@ -28,7 +28,6 @@ import { useEffect, useState } from "react";
 import {
   callCreateCompany,
   callUpdateCompany,
-  callUploadSingleFile,
   callUploadSingleFileToCloudinary,
 } from "@/config/api";
 import { ICompany } from "@/types/backend";
