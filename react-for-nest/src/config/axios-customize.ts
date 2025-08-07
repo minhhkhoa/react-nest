@@ -74,18 +74,18 @@ instance.interceptors.response.use(
       if (access_token) {
         error.config.headers["Authorization"] = `Bearer ${access_token}`;
         localStorage.setItem("access_token", access_token);
-        return instance.request(error.config);
+        return instance.request(error.config); //- goi lai request dang can goi nhung het access_token
       }
     }
 
     if (
+      //- TH2: Refresh token thất bại → dispatch logout hoặc thông báo
       error.config &&
       error.response &&
       +error.response.status === 400 &&
       error.config.url === "/api/v1/auth/refresh" &&
       location.pathname.startsWith("/admin")
     ) {
-      //- TH2: Refresh token thất bại → dispatch logout hoặc thông báo
       const message =
         error?.response?.data?.message ?? "Có lỗi xảy ra, vui lòng login.";
       //dispatch redux action
