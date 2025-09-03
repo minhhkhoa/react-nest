@@ -16,7 +16,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: configService.get<string>('JWT_ACCESS_TOKEN_SECRET') as string,
+      secretOrKey: configService.get<string>(
+        'JWT_ACCESS_TOKEN_SECRET',
+      ) as string,
     });
   }
 
@@ -35,7 +37,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       email,
       role,
       permissions: temp?.permissions ?? [],
-      company: payload.company ?? []
+      company: payload.company ?? [],
     }; //- nó sẽ gán vào req.user đấy
   }
 }
+
+/*
+  - JwtStrategy chịu trách nhiệm xác thực & gắn thông tin user vào req.user.
+  - JwtAuthGuard chịu trách nhiệm chặn request khi user không có quyền hoặc chưa login.
+*/
