@@ -25,6 +25,7 @@ const ViewDetailResume = (props: IProps) => {
   const [isSubmit, setIsSubmit] = useState<boolean>(false);
   const { onClose, open, dataInit, setDataInit, reloadTable } = props;
   const [form] = Form.useForm();
+  console.log("dataInit", dataInit);
 
   const handleChangeStatus = async () => {
     setIsSubmit(true);
@@ -111,6 +112,11 @@ const ViewDetailResume = (props: IProps) => {
             {dataInit && dataInit.updatedAt
               ? dayjs(dataInit.updatedAt).format("DD-MM-YYYY HH:mm:ss")
               : ""}
+          </Descriptions.Item>
+          <Descriptions.Item label="Thông tin cv">
+            <a href={dataInit?.url} target="_blank" rel="noopener noreferrer">
+              Xem/Tải CV
+            </a>
           </Descriptions.Item>
         </Descriptions>
       </Drawer>

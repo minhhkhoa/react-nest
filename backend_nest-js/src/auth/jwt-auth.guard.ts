@@ -53,6 +53,8 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     //- public enpoind nay khong can check permission
     if (targetEnpoint.startsWith('/api/v1/auth')) isExist = true;
 
+    // if (targetEnpoint.startsWith('/api/v1/cloudinary/upload')) isExist = true;
+
     if (!isExist && !isSkipPermission) {
       throw new ForbiddenException('Bạn không có quyền truy cập');
     }

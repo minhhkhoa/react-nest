@@ -16,7 +16,7 @@ import { useNavigate } from "react-router-dom";
 import enUS from "antd/lib/locale/en_US";
 import { UploadOutlined } from "@ant-design/icons";
 import type { UploadProps } from "antd";
-import { callCreateResume, callUploadSingleFile } from "@/config/api";
+import { callCreateResume, callUploadSingleFile, callUploadSingleFileToCloudinary } from "@/config/api";
 import { useState } from "react";
 
 interface IProps {
@@ -68,26 +68,31 @@ const ApplyModal = (props: IProps) => {
   const propsUpload: UploadProps = {
     maxCount: 1,
     multiple: false,
-    accept: "application/pdf,application/msword, .doc, .docx, .pdf",
+    accept: "application/pdf,application/msword,.doc,.docx,.pdf",
     async customRequest({ file, onSuccess, onError }: any) {
-      const res = await callUploadSingleFile(file, "resume");
-      if (res && res.data) {
-        setUrlCV(res.data.fileName);
-        if (onSuccess) onSuccess("ok");
-      } else {
-        if (onError) {
-          setUrlCV("");
-          const error = new Error(res.message);
-          onError({ event: error });
+      try {
+        // gọi API upload lên Cloudinary
+        const res = await callUploadSingleFileToCloudinary(file);
+
+        if (res && res.data) {
+          // backend trả về link/fileName từ Cloudinary
+          setUrlCV(res.data);
+          if (onSuccess) onSuccess("ok");
+          message.success("Upload CV thành công!");
+        } else {
+          throw new Error(res?.message || "Upload thất bại");
         }
+      } catch (err: any) {
+        setUrlCV("");
+        if (onError) {
+          onError({ event: err });
+        }
+        message.error(err?.message || "Đã có lỗi xảy ra khi upload file.");
       }
     },
     onChange(info) {
-      if (info.file.status !== "uploading") {
-        // console.log(info.file, info.fileList);
-      }
       if (info.file.status === "done") {
-        message.success(`${info.file.name} file uploaded successfully`);
+        message.success(`${info.file.name} đã được upload thành công`);
       } else if (info.file.status === "error") {
         message.error(
           info?.file?.error?.event?.message ??
@@ -96,6 +101,7 @@ const ApplyModal = (props: IProps) => {
       }
     },
   };
+
 
   return (
     <>

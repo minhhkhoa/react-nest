@@ -8,6 +8,11 @@ export class CloudinaryService {
   uploadFile(file: Express.Multer.File): Promise<CloudinaryResponse> {
     return new Promise<CloudinaryResponse>((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
+        {
+          folder: 'resume', //- lưu vào folder resume trên cloud
+          resource_type: 'auto', //- tự động biết kiểu mở rộng của file
+          access_mode: 'public', //- Cho phép public link
+        },
         (error, result) => {
           if (error) return reject(error);
           if (result) {
