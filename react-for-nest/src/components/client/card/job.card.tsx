@@ -68,6 +68,7 @@ const JobCard = (props: IProps) => {
     navigate(`/job/${slug}?id=${item._id}`);
   };
 
+  console.log(displayJob);
   return (
     <div className={`${styles["card-job-section"]}`}>
       <div className={`${styles["job-content"]}`}>
@@ -95,12 +96,7 @@ const JobCard = (props: IProps) => {
                   >
                     <div className={styles["card-job-content"]}>
                       <div className={styles["card-job-left"]}>
-                        <img
-                          alt="example"
-                          src={`${
-                            import.meta.env.VITE_BACKEND_URL
-                          }/images/company/${item?.company?.logo}`}
-                        />
+                        <img alt="example" src={item?.company?.logo} />
                       </div>
                       <div className={styles["card-job-right"]}>
                         <div className={styles["job-title"]}>{item.name}</div>

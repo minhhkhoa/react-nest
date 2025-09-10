@@ -16,10 +16,11 @@ export class JobsService {
     @InjectModel(Job.name) private jobModel: SoftDeleteModel<JobDocument>, //- sử dụng SoftDeleteModel thông qua model JobDocument
   ) {}
   async create(createJobDto: CreateJobDto, user: IUser) {
+    // console.log("createJobDto: ",createJobDto);
     try {
-      const logo =
-        listNameImages[Math.floor(Math.random() * listNameImages.length)];
-      createJobDto.company.logo = logo;
+      // const logo =
+      //   listNameImages[Math.floor(Math.random() * listNameImages.length)];
+      // createJobDto.company.logo = logo;
       const newJob = await this.jobModel.create({
         ...createJobDto,
         createdBy: {
@@ -66,6 +67,8 @@ export class JobsService {
       .sort(sort as any)
       .populate(population)
       .exec();
+
+    // console.log("result: ",result);
 
     return {
       meta: {

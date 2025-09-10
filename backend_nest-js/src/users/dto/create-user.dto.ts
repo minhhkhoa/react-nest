@@ -21,6 +21,7 @@ export class Company {
   @IsNotEmpty()
   name: string;
 
+  @IsNotEmpty()
   logo: string;
 }
 
