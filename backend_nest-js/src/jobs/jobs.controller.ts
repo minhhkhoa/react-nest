@@ -42,6 +42,18 @@ export class JobsController {
     return this.jobsService.findAll(page, limit, query, user);
   }
 
+  @Get("getalljobmanager")
+  @ResponseMessage('Fetch jobs manager with paginate')
+  findAllJobManager(
+    @Query('current') page: number,
+    @Query('pageSize') limit: number,
+    @Query() query: string,
+    @userDecorator() user: IUser,
+  ) {
+    // console.log("first")
+    return this.jobsService.findAll(page, limit, query, user);
+  }
+
   @Get(':id')
   @Public()
   @ResponseMessage('fetch a job by id')

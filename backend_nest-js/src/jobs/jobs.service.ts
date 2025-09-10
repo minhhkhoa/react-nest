@@ -8,7 +8,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { BadRequestCustom } from 'src/customExceptions/BadRequestCustom';
 import mongoose from 'mongoose';
 import aqp from 'api-query-params';
-import { listNameImages } from './imagesJob';
 
 @Injectable()
 export class JobsService {
@@ -16,11 +15,7 @@ export class JobsService {
     @InjectModel(Job.name) private jobModel: SoftDeleteModel<JobDocument>, //- sử dụng SoftDeleteModel thông qua model JobDocument
   ) {}
   async create(createJobDto: CreateJobDto, user: IUser) {
-    // console.log("createJobDto: ",createJobDto);
     try {
-      // const logo =
-      //   listNameImages[Math.floor(Math.random() * listNameImages.length)];
-      // createJobDto.company.logo = logo;
       const newJob = await this.jobModel.create({
         ...createJobDto,
         createdBy: {
@@ -50,6 +45,7 @@ export class JobsService {
     delete filter.pageSize;
 
     if (user?.company?._id) {
+      //- role admin se ko co company._id nen se ko co filter -> lay toan bo job. Con role hr hay account thuoc cty nao do se co filter
       filter['company._id'] = user.company._id;
     }
 
@@ -67,8 +63,6 @@ export class JobsService {
       .sort(sort as any)
       .populate(population)
       .exec();
-
-    // console.log("result: ",result);
 
     return {
       meta: {
