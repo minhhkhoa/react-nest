@@ -52,12 +52,7 @@ const ClientCompanyDetailPage = (props: any) => {
               <Col span={24} md={8}>
                 <div className={styles["company"]}>
                   <div>
-                    <img
-                      alt="example"
-                      src={`${
-                        import.meta.env.VITE_BACKEND_URL
-                      }/images/company/${companyDetail?.logo}`}
-                    />
+                    <img alt="example" src={companyDetail?.logo} />
                   </div>
                   <div>{companyDetail?.name}</div>
                 </div>
