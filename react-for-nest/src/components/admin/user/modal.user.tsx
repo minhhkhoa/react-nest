@@ -29,6 +29,7 @@ export interface ICompanySelect {
   label: string;
   value: string;
   key?: string;
+  logo?: string;
 }
 
 const ModalUser = (props: IProps) => {
@@ -37,6 +38,9 @@ const ModalUser = (props: IProps) => {
   const [roles, setRoles] = useState<ICompanySelect[]>([]);
 
   const [form] = Form.useForm();
+
+  console.log("datainit", dataInit);
+  console.log("companies", companies);
 
   useEffect(() => {
     if (dataInit?._id) {
@@ -64,6 +68,7 @@ const ModalUser = (props: IProps) => {
   const submitUser = async (valuesForm: any) => {
     const { name, email, password, address, age, gender, role, company } =
       valuesForm;
+      console.log("company", company);
     if (dataInit?._id) {
       //update
       const user = {
@@ -77,6 +82,7 @@ const ModalUser = (props: IProps) => {
         company: {
           _id: company?.value ?? company._id,
           name: company?.label ?? company.name,
+          logo: company?.logo ?? company.logo,
         },
       };
 
@@ -104,6 +110,7 @@ const ModalUser = (props: IProps) => {
         company: {
           _id: company.value,
           name: company.label,
+          logo: company.logo,
         },
       };
       const res = await callCreateUser(user);
@@ -127,24 +134,26 @@ const ModalUser = (props: IProps) => {
     setRoles([]);
     setOpenModal(false);
   };
-
   // Usage of DebounceSelect
   async function fetchCompanyList(name: string): Promise<ICompanySelect[]> {
     const res = await callFetchCompany(
       `current=1&pageSize=100&name=/${name}/i`
     );
+
     if (res && res.data) {
       const list = res.data.result;
       const temp = list.map((item) => {
         return {
           label: item.name as string,
           value: item._id as string,
+          logo: item.logo,
         };
       });
+
       return temp;
     } else return [];
   }
-
+  
   async function fetchRoleList(name: string): Promise<ICompanySelect[]> {
     const res = await callFetchRole(`current=1&pageSize=100&name=/${name}/i`);
     if (res && res.data) {
@@ -273,6 +282,7 @@ const ModalUser = (props: IProps) => {
                 placeholder="Chọn công ty"
                 fetchOptions={fetchCompanyList}
                 onChange={(newValue: any) => {
+                  console.log("newValue:", newValue);
                   if (newValue?.length === 0 || newValue?.length === 1) {
                     setCompanies(newValue as ICompanySelect[]);
                   }

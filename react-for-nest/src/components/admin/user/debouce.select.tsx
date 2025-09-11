@@ -14,6 +14,7 @@ export function DebounceSelect<
     key?: string;
     label: React.ReactNode;
     value: string | number;
+    logo?: string;
   } = any
 >({
   fetchOptions,
@@ -67,6 +68,17 @@ export function DebounceSelect<
       notFoundContent={fetching ? <Spin size="small" /> : null}
       {...props}
       options={options}
+      onChange={(val, option: any) => {
+        if (props.onChange) {
+          props.onChange(
+            {
+              ...val,
+              logo: option.logo,
+            } as ValueType & { logo: any },
+            option
+          );
+        }
+      }}
       onFocus={handleOnFocus}
       onBlur={handleOnBlur}
     />

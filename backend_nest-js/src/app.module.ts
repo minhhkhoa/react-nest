@@ -40,6 +40,9 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         uri: configService.get<string>('MONGO_URL'),
+        maxPoolSize: 20, //- tăng connection pool (mặc định 5)
+        serverSelectionTimeoutMS: 5000, //- nếu connect tới server quá 5s thì báo lỗi
+        socketTimeoutMS: 45000, //- timeout
         connectionFactory: (connection: Connection) => {
           //- điều này giúp sử dụng soft delete
           connection.plugin(softDeletePlugin);
